@@ -1,0 +1,28 @@
+{
+  "name": "itmmbot",
+  "version": "1.0.0",
+  "description": "time table bot",
+  "main": "update.js",
+  "dependencies": {
+    "jsdom": "^15.1.1",
+    "xlsx": "^0.15.1",
+    "xlsx-style": "^0.8.13"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SoNiceElijah/ItmmBot.git"
+  },
+  "keywords": [
+    "bot"
+  ],
+  "author": "SoNiceElijah",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SoNiceElijah/ItmmBot/issues"
+  },
+  "homepage": "https://github.com/SoNiceElijah/ItmmBot#readme"
+}
