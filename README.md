@@ -1,0 +1,2 @@
+# ItmmBot
+Time table parser 
