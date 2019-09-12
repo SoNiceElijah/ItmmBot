@@ -5,6 +5,8 @@
   "main": "update.js",
   "dependencies": {
     "jsdom": "^15.1.1",
+    "mongodb": "^3.3.2",
+    "node-vk-bot-api": "^2.4.11",
     "xlsx": "^0.15.1",
     "xlsx-style": "^0.8.13"
   },
