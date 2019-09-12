@@ -3,7 +3,6 @@ const fs = require('fs')
 const jsdom = require('jsdom')
 
 let mapper = require('./map');
-mapper.init();
 
 const file = [
     fs.createWriteStream("./data/data3.xls"),

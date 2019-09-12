@@ -2,7 +2,7 @@
   "name": "itmmbot",
   "version": "1.0.0",
   "description": "time table bot",
-  "main": "update.js",
+  "main": "bot.js",
   "dependencies": {
     "jsdom": "^15.1.1",
     "mongodb": "^3.3.2",
