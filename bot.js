@@ -14,6 +14,7 @@ const mainKeys =  Markup.keyboard([
         Markup.button('Завтра', 'secondary')
     ]
 ]);
+
 //require('./update');
 const sc = 
     new Scene('meet',
@@ -22,16 +23,25 @@ const sc =
         ctx.reply('Привет! Кажется мы еще не знакомы, из какой ты группы? (Например: 382103-4)')
     },
     (ctx) => {
-        ctx.scene.next();
+        ctx.scene.selectStep(3);
         ctx.session.group = ctx.message.body.trim();
 
-        ctx.reply('В какой ты подгруппе? (1 или 2, если подгруппы нет, то напиши любую)');
+        ctx.reply('В какой ты подгруппе? (1 или 2, если подгруппы нет, то напиши 1)');
     },
     (ctx) => {
-        console.log(ctx.message.body);
-        $.register(ctx.message.user_id, ctx.session.group ,ctx.message.body.trim());
+        ctx.scene.next();
+        ctx.reply('В какой ты подгруппе? (1 или 2, если подгруппы нет, то напиши 1)');
+    },
+    (ctx) => {
+        let sub = ctx.message.body.trim();
+        if(sub != "1" && sub != "2")  {
+            ctx.scene.selectStep(3);
+            return ctx.reply('Ответь либо 1, либо 2');
+        }
 
+        $.register(ctx.message.user_id, ctx.session.group , sub);
         ctx.scene.leave();
+        
         ctx.reply('Отлично! Теперь ты сможешь получать расписание!',null, mainKeys);
     });
 
@@ -146,8 +156,10 @@ let helpString = `
     ${mark} Сегодня - расписание на сегодня
     ${mark} Завтра - расписание на завтра\n
 
-    ${dark} #bug - сообщить о баге
-    ${dark} #info - сообщить информацию (не хватает пары)    
+    ${dark} #bug [message] - сообщить о баге
+    ${dark} #info [message] - сообщить информацию (не хватает пары)    
+
+    ${dark} /exit - сбросить персональные настройки
     `;
 
 bot.command('/help', (ctx) => {
