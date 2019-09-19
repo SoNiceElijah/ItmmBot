@@ -3,9 +3,12 @@ let db = {}
 let time = {}
 let user = {}
 let log = {}
+let link = {}
 
 let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 let weeks = ["DOWN", "UP"]
+
+let settings = require('./set');
 
 async function dataUpdate() {
     
@@ -22,16 +25,18 @@ async function dataUpdate() {
         }
         console.log(`Done ${j} items`);
     }
+    settings.freeze = false;
 }
 
 module.exports = {
     init : async () => {
         try {
-            let client = await mongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true });
+            let client = await mongoClient.connect("mongodb://localhost:27017",{ useNewUrlParser: true ,useUnifiedTopology: true});
             db = client.db("ItmmTimeTable");
             time = db.collection("timeTable");
             user = db.collection("userTable");
             log = db.collection("logTable");
+            link = db.collection('linkTable');
         }
         catch (ex) {console.log(ex);}
     },
@@ -114,6 +119,19 @@ module.exports = {
             message : text,
             lvl : lvl
         });
+    },
+    checkLink : async (id, href) => {
+        let data = (await link.findOne({num:id}));
+        if(!data) {
+            link.insertOne({num : id, href : href});
+            return false
+        }
+        if(data.href == href)
+            return true;
+        else {
+            link.updateOne({num : id}, {$set : {href : href}});
+            return false;
+        }
     }
 }
 
@@ -125,3 +143,4 @@ Date.prototype.getWeekNumber = function(){
     var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
     return Math.ceil((((d - yearStart) / 86400000) + 1)/7)
   };
+

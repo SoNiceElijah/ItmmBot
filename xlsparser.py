@@ -4,8 +4,8 @@ import sys
 
 start_offset = 15
 
-#sys.argv.append("./data/data0.xls")
-#sys.argv.append("test")
+sys.argv.append("./data/data0.xls")
+sys.argv.append("test")
 
 time_array = ["7:30", "9:10", "10:50", "13:00", "14:40", "16:20", "18:00", "19:40"]
 day_array = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -115,6 +115,8 @@ def block(i,j):
     if(style.background.pattern_colour_index == 64) :
         return ""
  
+    if(type(cell.value) == float):
+        cell.value = int(cell.value)
     data += str(cell.value).strip()
 
     bb = is_bottom_border(i,j)
@@ -135,6 +137,8 @@ def block(i,j):
         
         try:
             cell = sheet.cell(j,i)
+            if(type(cell.value) == float):
+                cell.value = int(cell.value)
             data += " " + str(cell.value).strip()
 
             bb = is_bottom_border(i,j) or bb
@@ -155,6 +159,7 @@ with open(sys.argv[2] + ".log", "w",  encoding='utf8') as log:
         log.write( str(sheet.ncols) + " " + str(sheet.nrows) + "\n")
 
         for i in range(2, sheet.ncols - 1, 2):
+
             log.write(str(i) + " <- i\n")
             if(sheet.cell(12,i).value != ""):
                 group_array.append(sheet.cell(12,i).value)
@@ -182,6 +187,8 @@ with open(sys.argv[2] + ".log", "w",  encoding='utf8') as log:
         MAX_HEIGHT = 111 + (start_offset - 15) - 1
 
         for i in range(2, 2 + 2 * group_array.__len__()):
+            if(sheet.colinfo_map[i].hidden):
+                continue
             print("------------- " + str(group_array[int(i/2) - 1]) + " " + "(" +str(i % 2 + 1) + ")" + "-------------\n")
 
             group = str(group_array[int(i/2)- 1])

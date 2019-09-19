@@ -5,6 +5,14 @@ const Scene = require('node-vk-bot-api/lib/scene')
 const Stage = require('node-vk-bot-api/lib/stage')
 const Session = require('node-vk-bot-api/lib/session')
 
+let settings = require('./set');
+
+main();
+async function main() {
+let $ = require('./map');
+await $.init();
+
+require('./update');
 
 const mainKeys =  Markup.keyboard([
     [
@@ -15,7 +23,6 @@ const mainKeys =  Markup.keyboard([
     ]
 ]);
 
-//require('./update');
 const sc = 
     new Scene('meet',
     (ctx) => {
@@ -51,17 +58,26 @@ const sc =
         ctx.reply('Отлично! Теперь ты сможешь получать расписание!',null, mainKeys);
     });
 
-let $ = require('./map');
-$.init();
-
 const bot = new vkBot({
-   token : "6a0ac777d5312fd4242c4b3c0fd6b2428e9368b16d2ede70d7a78be92dcd37ddce53eab0bc551a5f1b7d8",
-   group_id : 186457555
+   token : "0a3061a44aa454b81311af0952f07991f632f1e2ba806faf752add8a3e12651ebe64dc6d94c4ca4956986",
+   group_id : 171210583
 });
 
 
 bot.use((new Session).middleware());
 bot.use((new Stage(sc)).middleware());
+
+bot.use(async (ctx,next) => {
+
+    let i = 0;
+    while(settings.freeze) {
+        if(!i)
+        ctx.reply('Обновляем расписание...');
+        ++i;
+    }
+
+    next();
+});
 
 bot.use(async (ctx, next) => {
     let user = await $.user(ctx.message.user_id);
@@ -250,3 +266,4 @@ function createDayBlock(ctx, data, d, w, h = true) {
 }
 
 
+}

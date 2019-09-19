@@ -1,51 +1,60 @@
 const http = require('http')
 const fs = require('fs')
 const jsdom = require('jsdom')
+const axios = require('axios');
+
+let settings = require('./set');
 
 let mapper = require('./map');
 
 const file = [
-    fs.createWriteStream("./data/data3.xls"),
-    fs.createWriteStream("./data/data2.xls"),
+    fs.createWriteStream("./data/data0.xls"),
     fs.createWriteStream("./data/data1.xls"),
-    fs.createWriteStream("./data/data0.xls")
+    fs.createWriteStream("./data/data2.xls"),
+    fs.createWriteStream("./data/data3.xls")
 ]
 
-let cs = 0;
-let pc = 0;
+function download(url, lock) {
+    return new Promise((resolve, reject) => {
+    const tmp = http.get(url, (r) => {
+        r.pipe(file[lock]);
+        file[lock].on('finish', () => {
+            var spawn = require("child_process").spawn;
+            console.log("./data/data"+lock+".xls");
+            let proc = spawn('python', ["./xlsparser.py","./data/data"+lock+".xls","./outtmp/ttOut"+lock+".json"]);
+            proc.on('exit', d => {
+                resolve("DONE PROC #" + lock);
+            })
 
+        });
+    })});
+} 
 
-const req = http.get("http://www.itmm.unn.ru/studentam/raspisanie/raspisanie-bakalavriata-i-spetsialiteta-ochnoj-formy-obucheniya/", (res) => {
-    let data = ""
-    res.on('data', token => {
-        data += token;
-    })
+let func = async () => {
 
-    res.on('end', () => {
-        let dom = new jsdom.JSDOM(data);
-        document = dom.window.document;
+    let res = await axios.get("http://www.itmm.unn.ru/studentam/raspisanie/raspisanie-bakalavriata-i-spetsialiteta-ochnoj-formy-obucheniya/") ;
+    
+    let dom = new jsdom.JSDOM(res.data);
+    document = dom.window.document;
 
-        let links = document.getElementsByTagName('a');
-        for(let i = 0, j = 0; j < 4 && i < links.length; ++i)
-            if(links[i].href.startsWith("http://www.itmm.unn.ru/files/")) {
-                const tmp = http.get(links[i].href, (r) => {
-                    const lock = cs++;
-                    r.pipe(file[lock]);
-                    setTimeout(() => {
-                        var spawn = require("child_process").spawn; 
+    let changed = false;
+    let links = document.getElementsByTagName('a');
+    for(let i = 0, j = 0; j < 4 && i < links.length; ++i)
+        if(links[i].href.startsWith("http://www.itmm.unn.ru/files/")) {
+            if(!(await mapper.checkLink(j,links[i].href))) {
+                let res = await download(links[i].href,j);
+                console.log(res);
+                changed = true;
+            }
+            ++j;
+    }
 
-                        console.log("./data/data"+lock+".xls");
-                        let proc = spawn('python', ["./xlsparser.py","./data/data"+lock+".xls","./outtmp/ttOut"+lock+".json"]);
-                        proc.on('exit', d => {
-                            console.log("DONE PROC #" + lock);
-                            ++pc;
-                            if(pc == 4)
-                                mapper.update();
-                        })
+    if(changed) {
+        settings.freeze = true;
+        mapper.update();
+    }
+}
 
-                    }, 3000);
-                });
-                ++j
-        }
-    })
-});
+func();
+//20 * 60 * 1000
+setInterval (func, 2000 );
