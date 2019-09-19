@@ -4,6 +4,7 @@ let time = {}
 let user = {}
 let log = {}
 let link = {}
+let group = {}
 
 let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 let weeks = ["DOWN", "UP"]
@@ -14,17 +15,23 @@ async function dataUpdate() {
     while(settings.active) { }
     await time.drop();
     for(let i = 0; i < 4; ++i) {
-        data = require(`./outtmp/ttOut${i}.json`);
+        let data = require(`./outtmp/ttOut${i}.json`);
         let j = 0;
         for( ; j < data.length; ++j) {
 
             data[j].content = data[j].content.trim();
             data[j].group = data[j].group.trim();
 
-            time.insertOne(data[j]);
+            await time.insertOne(data[j]);
         }
         console.log(`Done ${j} items`);
     }
+
+    //Group hash recount
+    let arr = await time.find({}).toArray();
+    let gs = arr.map(el => el.group).filter((el,i,arr) => arr.indexOf(el) === i);
+    console.log(gs);
+
     settings.freeze = false;
 }
 
@@ -37,6 +44,7 @@ module.exports = {
             user = db.collection("userTable");
             log = db.collection("logTable");
             link = db.collection('linkTable');
+            group = db.collection('groupTable');
         }
         catch (ex) {console.log(ex);}
     },
