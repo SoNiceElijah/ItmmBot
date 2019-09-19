@@ -11,7 +11,7 @@ let weeks = ["DOWN", "UP"]
 let settings = require('./set');
 
 async function dataUpdate() {
-    
+    while(settings.active) { }
     await time.drop();
     for(let i = 0; i < 4; ++i) {
         data = require(`./outtmp/ttOut${i}.json`);

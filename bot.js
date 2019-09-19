@@ -67,14 +67,21 @@ const bot = new vkBot({
 bot.use((new Session).middleware());
 bot.use((new Stage(sc)).middleware());
 
-bot.use(async (ctx,next) => {
 
-    let i = 0;
-    while(settings.freeze) {
-        if(!i)
-        ctx.reply('Обновляем расписание...');
-        ++i;
-    }
+bot.use(async (ctx,next) => {
+    ++settings.active;
+    console.log('one up. now: ' + settings.active);
+    ctx.reply = (...args) => {
+        ctx.bot.sendMessage(ctx.message.peer_id || ctx.message.user_id, ...args);
+        --settings.active;
+        console.log('one down. now: ' + settings.active);
+      }
+
+      next();
+});
+
+bot.use(async (ctx,next) => {
+    while(settings.freeze) {}
 
     next();
 });

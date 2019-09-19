@@ -8,17 +8,19 @@ let settings = require('./set');
 let mapper = require('./map');
 
 const file = [
-    fs.createWriteStream("./data/data0.xls"),
-    fs.createWriteStream("./data/data1.xls"),
-    fs.createWriteStream("./data/data2.xls"),
-    fs.createWriteStream("./data/data3.xls")
+    "./data/data0.xls",
+    "./data/data1.xls",
+    "./data/data2.xls",
+    "./data/data3.xls"
 ]
 
 function download(url, lock) {
     return new Promise((resolve, reject) => {
     const tmp = http.get(url, (r) => {
-        r.pipe(file[lock]);
-        file[lock].on('finish', () => {
+        let stream = fs.createWriteStream(file[lock]);
+        r.pipe(stream);
+        stream.on('finish', () => {
+            stream.close();
             var spawn = require("child_process").spawn;
             console.log("./data/data"+lock+".xls");
             let proc = spawn('python', ["./xlsparser.py","./data/data"+lock+".xls","./outtmp/ttOut"+lock+".json"]);
@@ -56,5 +58,4 @@ let func = async () => {
 }
 
 func();
-//20 * 60 * 1000
-setInterval (func, 2000 );
+setInterval (func, 10 * 60 * 1000); // 10 min
