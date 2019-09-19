@@ -22,9 +22,15 @@ const sc =
         ctx.scene.next();
         ctx.reply('Привет! Кажется мы еще не знакомы, из какой ты группы? (Например: 382103-4)')
     },
-    (ctx) => {
+    async (ctx) => {
         ctx.scene.selectStep(3);
         ctx.session.group = ctx.message.body.trim();
+
+        let verify = await $.checkGroup(ctx.session.group);
+        if(!verify) {
+            ctx.scene.selectStep(1);
+            return ctx.reply('Такой группы у нас нет. Попробуй ввести что-нибудь другое');
+        }
 
         ctx.reply('В какой ты подгруппе? (1 или 2, если подгруппы нет, то напиши 1)');
     },
@@ -144,6 +150,15 @@ bot.command('#info', async (ctx) => {
     ctx.reply("Ничего себе! Будем знать!");
 });
 
+const setKeys =  Markup.keyboard([
+    [
+        Markup.button('/exit', 'negative')
+    ]
+]);
+bot.command('Настройки', async (ctx) => {
+    ctx.reply('Вот параметры',null,setKeys);
+});
+
 
 
 let mark = "&#128313;";
@@ -224,7 +239,7 @@ let weeks = ["Нижняя неделя", "Верхняя неделя"];
 let short_weeks = ["down", "up"]
 
 function createDayBlock(ctx, data, d, w, h = true) {
-    let str = h ? `&#128198; ${days[d]} [${weeks[w]}]\n\n` : `&#128309; ${days[d]} (${short_weeks[w]}) \n`;
+    let str = h ? `&#128198; ${days[d]} [${weeks[w]}]\n\n` : `&#128309; ${days[d]} \n`;
     for(let i = 0; i < data.length; ++i) {
         str += (h ? dark : mark) + " " + data[i].time + "\n" + data[i].content + '\n'; 
     }

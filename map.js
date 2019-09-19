@@ -5,7 +5,7 @@ let user = {}
 let log = {}
 
 let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-let weeks = ["UP", "DOWN"]
+let weeks = ["DOWN", "UP"]
 
 async function dataUpdate() {
     
@@ -26,11 +26,14 @@ async function dataUpdate() {
 
 module.exports = {
     init : async () => {
-        let client = await mongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true });
-        db = client.db("ItmmTimeTable");
-        time = db.collection("timeTable");
-        user = db.collection("userTable");
-        log = db.collection("logTable");
+        try {
+            let client = await mongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true });
+            db = client.db("ItmmTimeTable");
+            time = db.collection("timeTable");
+            user = db.collection("userTable");
+            log = db.collection("logTable");
+        }
+        catch (ex) {console.log(ex);}
     },
     update : dataUpdate,   
     getAll : async (g, s) => {
@@ -64,6 +67,13 @@ module.exports = {
             week : weeks[w % 2],
             subgroup : s
         })).toArray();
+    },
+    checkGroup : async(g) => {
+        let data = await (await time.find({group : g})).toArray();
+        if(data.length == 0)
+            return false;
+        else
+            return true;
     },
     getWeek : async (g,s) => {
         let d = new Date();
