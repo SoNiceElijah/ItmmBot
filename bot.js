@@ -14,14 +14,39 @@ await $.init();
 
 require('./update');
 
-const mainKeys =  Markup.keyboard([
-    [
-        Markup.button('Все', 'secondary'),
-        Markup.button('Неделя', 'secondary'),
-        Markup.button('Сегодня', 'secondary'),
-        Markup.button('Завтра', 'secondary')
-    ]
-]);
+const mainKeys =  [
+    Markup.keyboard([
+        [
+            Markup.button('Все', 'secondary'),
+            Markup.button('Неделя', 'secondary'),
+            Markup.button('Сегодня', 'secondary'),
+            Markup.button('Завтра', 'secondary')
+        ]
+    ]),
+    Markup.keyboard([
+        [
+            Markup.button('get link 1', 'positive'),
+            Markup.button('get link 2', 'positive'),
+            Markup.button('get link 3', 'positive'),
+            Markup.button('get link 4', 'positive')
+        ],
+        [
+            Markup.button('get week', 'primary')
+        ]
+    ]),
+    Markup.keyboard([
+        [
+            Markup.button('Понедельник', 'secondary'),
+            Markup.button('Вторник', 'secondary'),
+            Markup.button('Среда', 'secondary')
+        ],
+        [
+            Markup.button('Четверг', 'secondary'),
+            Markup.button('Пятница', 'secondary'),
+            Markup.button('Суббота', 'secondary'),
+        ]
+    ])
+];
 
 const sc = 
     new Scene('meet',
@@ -55,7 +80,7 @@ const sc =
         $.register(ctx.message.user_id, ctx.session.group , sub);
         ctx.scene.leave();
         
-        ctx.reply('Отлично! Теперь ты сможешь получать расписание!',null, mainKeys);
+        ctx.reply('Отлично! Теперь ты сможешь получать расписание!',null, mainKeys[0]);
     });
 
 const bot = new vkBot({
@@ -81,9 +106,18 @@ bot.use(async (ctx,next) => {
 });
 
 bot.use(async (ctx,next) => {
-    while(settings.freeze) {}
+    if(settings.freeze) {
+        let i = setInterval(() => {
+            if(!settings.freeze) {
+                clearInterval(i);
+                next();
+            }
+        }, 10);
+    }
+    else
+        next();
 
-    next();
+
 });
 
 bot.use(async (ctx, next) => {
@@ -91,8 +125,11 @@ bot.use(async (ctx, next) => {
     if(!user)
         ctx.scene.enter('meet');
     else {
+        ctx.uid = user.userId;
         ctx.group = user.group;
         ctx.sub = user.sub;
+        ctx.set = user.set;
+        ctx.custom = user.option;
         next();
     }
 });
@@ -163,6 +200,83 @@ bot.command('Все', async (ctx) => {
 
 })
 
+
+bot.command('Понедельник', async (ctx) => {
+    ctx.reply(await getBlockByDayNum(ctx,0));
+});
+
+bot.command('Вторник', async (ctx) => {
+    ctx.reply(await getBlockByDayNum(ctx,1));
+});
+
+bot.command('Среда', async (ctx) => {
+    ctx.reply(await getBlockByDayNum(ctx,2));
+});
+
+bot.command('Четверг', async (ctx) => {
+    ctx.reply(await getBlockByDayNum(ctx,3));
+});
+
+bot.command('Пятница', async (ctx) => {
+    ctx.reply(await getBlockByDayNum(ctx,4));
+});
+
+bot.command('Суббота', async (ctx) => {
+    ctx.reply(await getBlockByDayNum(ctx,5));
+});
+
+bot.command('?', async (ctx) => {
+    ctx.reply(weeks[(new Date()).getWeekNumber() % 2]);
+});
+
+bot.command('get week', async (ctx) => {
+    ctx.reply(weeks[(new Date()).getWeekNumber() % 2]);
+});
+
+bot.command('get link', async (ctx) => {
+    
+    let i = parseInt(ctx.message.body[ctx.message.body.length - 1]);
+    if(!i)
+        return ctx.reply('Wrong request, try smth like: get link <int>');
+
+    if(i < 1 || i > 4)
+        return ctx.reply('Wrong request. Link must be from 1 to 4');
+    
+    let link = await $.link(i-1);
+    ctx.reply('Вот ссылка:\n' + link.href);
+
+    console.log(ctx.message.body);
+});
+
+bot.command('set', async (ctx) => {
+    let i = parseInt(ctx.message.body[ctx.message.body.length - 1]);
+    if(!i)
+        return ctx.reply('Чтоб выбрать set - надо написать: set <число от 1 до 3>');
+
+    if(i < 1 || i > 3)
+        return ctx.reply('Чтоб выбрать set - надо написать: set <число от 1 до 3>');
+
+    if(i - 1 == ctx.set)
+        return ctx.reply('Эта клавиатура активна');
+    $.userSet(ctx.uid,i-1);
+    ctx.reply('Новая раскладка', null, mainKeys[i-1]);
+    
+});
+
+//TEST
+bot.command('test', async (ctx) => {
+    ctx.reply(`Привет! 
+    
+    Спасибо что участвуешь в тесте бота. 
+    Мы добавляем достаточно большое число функций за раз, не тестируя их должным образом. Поэтому мы надеемся на Вашу помощь.
+    
+    Если Вы встретите недочеты, или у Вас есть предложения, то пишите их с тегом #info.
+    
+    Если Вы встретие баги, то сообщайте о них с помощью тега #bug.
+    
+    Приятного пользования!!!`);
+});
+
 bot.command('#bug', async (ctx) => {
     $.log(ctx.message.user_id,ctx.message.body.substring(5),0);
     ctx.reply("Мы скоро все починим. Спасибо за помощь!");
@@ -173,14 +287,53 @@ bot.command('#info', async (ctx) => {
     ctx.reply("Ничего себе! Будем знать!");
 });
 
-const setKeys =  Markup.keyboard([
-    [
-        Markup.button('/exit', 'negative')
-    ]
-]);
-bot.command('Настройки', async (ctx) => {
-    ctx.reply('Вот параметры',null,setKeys);
+bot.command('Назад', async (ctx) => {
+    ctx.reply('ok', null, mainKeys[ctx.set]);
 });
+
+let setKeys = {};
+bot.command('Настройки', async (ctx) => {
+
+    setKeys = genSettigsKeys(ctx);
+
+    ctx.reply('Вот параметры (жди патча)',null,setKeys);
+});
+
+bot.command('param1', async (ctx) => {
+    ctx.custom.param1 = !ctx.custom.param1;
+    await $.userOption(ctx.uid,ctx.custom);
+
+    ctx.reply('ок', null, genSettigsKeys(ctx));
+});
+
+bot.command('param2', async (ctx) => {
+    ctx.custom.param2 = !ctx.custom.param2;
+    await $.userOption(ctx.uid,ctx.custom);
+
+    ctx.reply('ок', null, genSettigsKeys(ctx));
+});
+
+
+bot.command('param3', async (ctx) => {
+    ctx.custom.param3 = !ctx.custom.param3;
+    await $.userOption(ctx.uid,ctx.custom);
+
+    ctx.reply('ок', null, genSettigsKeys(ctx));
+});
+
+function genSettigsKeys(ctx) {
+    return Markup.keyboard([
+        [
+            Markup.button('param1', ctx.custom.param1 ? 'positive' : 'secondary'),
+            Markup.button('param2', ctx.custom.param2 ? 'positive' : 'secondary'),
+            Markup.button('param3', ctx.custom.param3 ? 'positive' : 'secondary')
+        ],
+        [
+            Markup.button('Назад', 'primary'),
+            Markup.button('Exit', 'negative')       
+        ]
+    ]);
+}
 
 
 
@@ -188,39 +341,57 @@ let mark = "&#128313;";
 let dark = "&#128310;";
 
 let helpString = `
-    &#10067; СПИСОК КОМАНД\n 
+    &#10067; СПИСОК КОМАНД
+
+    ${mark} СМЕНИТЬ РАСКЛАДКУ: set <число от 1 до 3>
+    ${mark} ? - узнать неделю
+
+    РАСКЛАДКА 1    
     ${mark} Все - показывает все расписание
     ${mark} Неделя - показывает расписание на текущую неделю
     ${mark} Сегодня - расписание на сегодня
     ${mark} Завтра - расписание на завтра\n
 
+    РАСКЛАДКА 2    
+    ${mark} get link 1 - расписание 1ого курса
+    ${mark} get link 2 - расписание 2ого курса
+    ${mark} get link 3 - расписание 3ого курса
+    ${mark} get link 4 - расписание 4ого курса
+    ${mark} get week - узнать текущую неделю
+    
+    РАСКЛАДКА 3
+    ${mark} <День недели> - Показывает расписание в этот день (на обе недели)
+
+    НАСТРОЙКИ
+    ${mark} На стадии разработки, показывает клавиатуру с будущими параметрами
+
     ${dark} #bug [message] - сообщить о баге
     ${dark} #info [message] - сообщить информацию (не хватает пары)    
 
-    ${dark} /exit - сбросить персональные настройки
+    ${dark} exit - сбросить персональные настройки
     `;
 
-bot.command('/help', (ctx) => {
-    ctx.reply(helpString, null, mainKeys)
+bot.command('help', (ctx) => {
+    ctx.reply(helpString)
 });
 
 bot.command('/keyup', (ctx) => {
-    ctx.reply("Держи кнопки", null, mainKeys);
+    ctx.reply("Держи кнопки", null, mainKeys[ctx.set]);
 });
 
 bot.command('/keydown', (ctx) => {
     ctx.reply("Окей", null, Markup.keyboard([]));
 });
 
-bot.command('/exit', (ctx) => {
+bot.command('exit', (ctx) => {
     ctx.reply("Учетная запись удалена", null, Markup.keyboard([]));
     $.delete(ctx.message.user_id);
 });
 
 let wrongQuestionStrings = [
-    "Я не знаю такой команды. Напиши /help, чтоб посмотреть что я умею",
-    "Не понимаю о чем ты, нужна помощь? /help",
-    "Слушай, мне кажется тебе нужно написать /help",
+    "Я не знаю такой команды. Напиши help, чтоб посмотреть что я умею",
+    "Не понимаю о чем ты, нужна помощь? help",
+    "Слушай, мне кажется тебе нужно написать help",
     "..."
 ];
 let wQSMem = []
@@ -267,10 +438,33 @@ function createDayBlock(ctx, data, d, w, h = true) {
         str += (h ? dark : mark) + " " + data[i].time + "\n" + data[i].content + '\n'; 
     }
     if(data.length == 0)
-        str += "ВЫХОДНОЙ"
+        str += "ВЫХОДНОЙ\n"
 
     return str;
 }
 
+async function getBlockByDayNum(ctx, num) {
+    let day = await $.getDayBig(ctx.group, ctx.sub, num);
+    let up = day.filter(el => el.week == 'UP');
+    let text = createDayBlock(ctx,up,num,1);
+    text += '\n';
+    let down = day.filter(el => el.week == 'DOWN');
+    text += createDayBlock(ctx,down,num,0);
+
+    return text;
+}
+
+let interval = setInterval(async () => {
+    let e = await $.getEvent('update');
+    let u;
+    for(let i = 0; i < e.length; ++i) {
+        u = (await $.userByGroup(e[i].content.group, e[i].content.sub)).map(el => el.userId);
+        if(u && u.length != 0)
+            bot.sendMessage(u,'Рассписание обновилось!');
+    }
+
+   
+
+} , 4000);
 
 }

@@ -58,4 +58,4 @@ let func = async () => {
 }
 
 func();
-setInterval (func, 10 * 60 * 1000); // 10 min
+setInterval (func, 10 * 60 * 1000); // 10 min = 
