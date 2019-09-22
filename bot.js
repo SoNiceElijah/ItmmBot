@@ -235,6 +235,9 @@ bot.command('get week', async (ctx) => {
 
 bot.command('get link', async (ctx) => {
     
+    if(ctx.message.body.length != 10)
+        return ctx.reply('Wrong request, try smth like: get link <int>');
+
     let i = parseInt(ctx.message.body[ctx.message.body.length - 1]);
     if(!i)
         return ctx.reply('Wrong request, try smth like: get link <int>');
@@ -249,6 +252,10 @@ bot.command('get link', async (ctx) => {
 });
 
 bot.command('set', async (ctx) => {
+
+    if(ctx.message.body.length != 5)
+        return ctx.reply('Чтоб выбрать set - надо написать: set <число от 1 до 3>');
+
     let i = parseInt(ctx.message.body[ctx.message.body.length - 1]);
     if(!i)
         return ctx.reply('Чтоб выбрать set - надо написать: set <число от 1 до 3>');
@@ -439,8 +446,11 @@ function createDayBlock(ctx, data, d, w, h = true) {
             str += 'ВОЕННАЯ ПОДГОТОВКА\n';
             break;
         }
-        else
+        else {
+            if(data[i].content.startsWith('ФИЗИЧЕСКАЯ КУЛЬТУРА'))
+                data[i].content = 'ФИЗИЧЕСКАЯ КУЛЬТУРА';
             str += (h ? dark : mark) + " " + data[i].time + "\n" + data[i].content + '\n'; 
+        }
     }
     if(data.length == 0)
         str += "ВЫХОДНОЙ\n"
