@@ -51,12 +51,15 @@ const mainKeys =  [
 const sc = 
     new Scene('meet',
     (ctx) => {
+        ctx.message.text = deleteBotName(ctx.message.text);
         ctx.scene.next();
         ctx.reply('Привет! Кажется мы еще не знакомы, из какой ты группы? (Например: 382103-4)')
     },
     async (ctx) => {
+        ctx.message.text = deleteBotName(ctx.message.text);
         ctx.scene.selectStep(3);
-        ctx.session.group = ctx.message.body.trim();
+        console.log(ctx.message);
+        ctx.session.group = ctx.message.body ? ctx.message.body.trim() : ctx.message.text.trim()  ;
 
         let verify = await $.checkGroup(ctx.session.group);
         if(!verify) {
@@ -67,20 +70,22 @@ const sc =
         ctx.reply('В какой ты подгруппе? (1 или 2, если подгруппы нет, то напиши 1)');
     },
     (ctx) => {
+        ctx.message.text = deleteBotName(ctx.message.text);
         ctx.scene.next();
         ctx.reply('В какой ты подгруппе? (1 или 2, если подгруппы нет, то напиши 1)');
     },
     (ctx) => {
-        let sub = ctx.message.body.trim();
+        ctx.message.text = deleteBotName(ctx.message.text);
+        let sub = ctx.message.body ? ctx.message.body.trim() : ctx.message.text.trim()  ;
         if(sub != "1" && sub != "2")  {
             ctx.scene.selectStep(3);
             return ctx.reply('Ответь либо 1, либо 2');
         }
 
-        $.register(ctx.message.user_id, ctx.session.group , sub);
+        $.register(ctx.message.user_id ? ctx.message.user_id : ctx.message.peer_id, ctx.session.group , sub);
         ctx.scene.leave();
         
-        ctx.reply('Отлично! Теперь ты сможешь получать расписание!',null, mainKeys[0]);
+        ctx.reply('Отлично! Теперь ты сможешь получать расписание!',null, Math.floor(ctx.message.peer_id / 1000) != 2000000 ? mainKeys[0] : null);
     });
 
 const bot = new vkBot({
@@ -121,7 +126,13 @@ bot.use(async (ctx,next) => {
 });
 
 bot.use(async (ctx, next) => {
-    let user = await $.user(ctx.message.user_id);
+    ctx.message.text = deleteBotName(ctx.message.text);
+        
+    next();
+});
+
+bot.use(async (ctx, next) => {
+    let user = await $.user(ctx.message.user_id ? ctx.message.user_id : ctx.message.peer_id);
     if(!user)
         ctx.scene.enter('meet');
     else {
@@ -143,6 +154,7 @@ bot.use(async (ctx, next) => {
 
     next();
 })
+
 
 bot.command('Сегодня', async (ctx) => {
 
@@ -235,10 +247,10 @@ bot.command('get week', async (ctx) => {
 
 bot.command('get link', async (ctx) => {
     
-    if(ctx.message.body.length != 10)
+    if(ctx.message.text.length != 10)
         return ctx.reply('Wrong request, try smth like: get link <int>');
 
-    let i = parseInt(ctx.message.body[ctx.message.body.length - 1]);
+    let i = parseInt(ctx.message.text[ctx.message.text.length - 1]);
     if(!i)
         return ctx.reply('Wrong request, try smth like: get link <int>');
 
@@ -248,15 +260,15 @@ bot.command('get link', async (ctx) => {
     let link = await $.link(i-1);
     ctx.reply('Вот ссылка:\n' + link.href);
 
-    console.log(ctx.message.body);
+    console.log(ctx.message.text);
 });
 
 bot.command('set', async (ctx) => {
 
-    if(ctx.message.body.length != 5)
+    if(ctx.message.text.length != 5)
         return ctx.reply('Чтоб выбрать set - надо написать: set <число от 1 до 3>');
 
-    let i = parseInt(ctx.message.body[ctx.message.body.length - 1]);
+    let i = parseInt(ctx.message.text[ctx.message.text.length - 1]);
     if(!i)
         return ctx.reply('Чтоб выбрать set - надо написать: set <число от 1 до 3>');
 
@@ -285,12 +297,12 @@ bot.command('test', async (ctx) => {
 });
 
 bot.command('#bug', async (ctx) => {
-    $.log(ctx.message.user_id,ctx.message.body.substring(5),0);
+    $.log(ctx.message.user_id,ctx.message.text.substring(5),0);
     ctx.reply("Мы скоро все починим. Спасибо за помощь!");
 });
 
 bot.command('#info', async (ctx) => {
-    $.log(ctx.message.user_id,ctx.message.body.substring(5),1);
+    $.log(ctx.message.user_id,ctx.message.text.substring(5),1);
     ctx.reply("Ничего себе! Будем знать!");
 });
 
@@ -392,7 +404,7 @@ bot.command('/keydown', (ctx) => {
 
 bot.command('exit', (ctx) => {
     ctx.reply("Учетная запись удалена", null, Markup.keyboard([]));
-    $.delete(ctx.message.user_id);
+    $.delete(ctx.message.user_id ? ctx.message.user_id : ctx.message.peer_id);
 });
 
 let wrongQuestionStrings = [
@@ -482,4 +494,14 @@ let interval = setInterval(async () => {
 
 } , 4000);
 
+}
+
+
+function deleteBotName(text) {
+    if(text.startsWith('[')) {
+        let i = text.indexOf(']');
+        return text.substring(i + 2);
+    }
+    else
+        return text;
 }
