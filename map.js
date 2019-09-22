@@ -9,7 +9,7 @@ let link = {}
 let group = {}
 let event = {}
 
-let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 let weeks = ["DOWN", "UP"]
 
 let settings = require('./set');
@@ -43,13 +43,13 @@ async function dataUpdate() {
                 .digest('hex');
             
             if(!(await module.exports.checkHash(gs[i],  j + '', hash))) {
-                await event.insertOne({
-                    type : 'update',
-                    content : {
-                        group : gs[i],
-                        sub : j + ''
-                    }
-                });
+                //await event.insertOne({
+                //    type : 'update',
+                //    content : {
+                //        group : gs[i],
+               //         sub : j + ''
+               //     }
+                //});
                 console.log("g: " + gs[i] + " sub: " + j + ' are updated!');
             }
         }
@@ -100,7 +100,7 @@ module.exports = {
 
         return (await time.find({
             group : g,
-            day : days[n -1],
+            day : days[n],
             week : weeks[w % 2],
             subgroup : s
         })).toArray();

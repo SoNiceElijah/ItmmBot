@@ -24,6 +24,9 @@ function download(url, lock) {
             var spawn = require("child_process").spawn;
             console.log("./data/data"+lock+".xls");
             let proc = spawn('python', ["./xlsparser.py","./data/data"+lock+".xls","./outtmp/ttOut"+lock+".json"]);
+            proc.stdout.on('data', d=> {
+                console.log(d);
+            });
             proc.on('exit', d => {
                 resolve("DONE PROC #" + lock);
             })

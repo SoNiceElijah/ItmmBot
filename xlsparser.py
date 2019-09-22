@@ -4,8 +4,8 @@ import sys
 
 start_offset = 15
 
-sys.argv.append("./data/data0.xls")
-sys.argv.append("test")
+#sys.argv.append("./data/data2.xls")
+#sys.argv.append("test")
 
 time_array = ["7:30", "9:10", "10:50", "13:00", "14:40", "16:20", "18:00", "19:40"]
 day_array = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -97,7 +97,7 @@ def is_top_border(i,j):
 
 
 def block(i,j):
-    if(i == 37 and j == 33):
+    if(i == 3 and j == 47):
         v = 10
 
     #Move left top
@@ -112,7 +112,8 @@ def block(i,j):
     cell = sheet.cell(j,i)
     style = wb.xf_list[cell.xf_index]
 
-    if(style.background.pattern_colour_index == 64) :
+    if(style.background.pattern_colour_index == 64 and cell.value == '') :
+        #print(':' + cell.value + ': lol')
         return ""
  
     if(type(cell.value) == float):

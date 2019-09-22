@@ -84,7 +84,7 @@ const sc =
     });
 
 const bot = new vkBot({
-   token : "0a3061a44aa454b81311af0952f07991f632f1e2ba806faf752add8a3e12651ebe64dc6d94c4ca4956986",
+   token : "85852badef2e576c898f6389e54da93c3970f2aad5e3264683e27a8abda0c710f188a92308e99c6653d81",
    group_id : 171210583
 });
 
@@ -139,7 +139,7 @@ bot.use(async (ctx, next) => {
     let d = new Date();
 
     ctx.w = d.getWeekNumber() % 2;
-    ctx.d = d.getDay() - 1;
+    ctx.d = d.getDay();
 
     next();
 })
@@ -161,7 +161,7 @@ bot.command('Завтра', async (ctx) => {
     let w = tomorrow.getWeekNumber() % 2;
 
     let data = await $.getDay(ctx.group, ctx.sub, tomorrow);
-    ctx.reply(createDayBlock(ctx, data, d-1, w));
+    ctx.reply(createDayBlock(ctx, data, d, w));
 
 })
 
@@ -202,27 +202,27 @@ bot.command('Все', async (ctx) => {
 
 
 bot.command('Понедельник', async (ctx) => {
-    ctx.reply(await getBlockByDayNum(ctx,0));
-});
-
-bot.command('Вторник', async (ctx) => {
     ctx.reply(await getBlockByDayNum(ctx,1));
 });
 
-bot.command('Среда', async (ctx) => {
+bot.command('Вторник', async (ctx) => {
     ctx.reply(await getBlockByDayNum(ctx,2));
 });
 
-bot.command('Четверг', async (ctx) => {
+bot.command('Среда', async (ctx) => {
     ctx.reply(await getBlockByDayNum(ctx,3));
 });
 
-bot.command('Пятница', async (ctx) => {
+bot.command('Четверг', async (ctx) => {
     ctx.reply(await getBlockByDayNum(ctx,4));
 });
 
-bot.command('Суббота', async (ctx) => {
+bot.command('Пятница', async (ctx) => {
     ctx.reply(await getBlockByDayNum(ctx,5));
+});
+
+bot.command('Суббота', async (ctx) => {
+    ctx.reply(await getBlockByDayNum(ctx,6));
 });
 
 bot.command('?', async (ctx) => {
@@ -404,7 +404,7 @@ bot.use((ctx,next) => {
         {
             wQSMem.splice(i,1);
             ctx.reply(wrongQuestionStrings[3], null, Markup.keyboard([
-                Markup.button('/HELP', 'primary'),
+                Markup.button('HELP', 'primary'),
             ]).oneTime());
         }
         else
@@ -428,14 +428,19 @@ bot.startPolling(() => {
     console.log("I'm online");
 })
 
-let days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+let days = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
 let weeks = ["Нижняя неделя", "Верхняя неделя"];
 let short_weeks = ["down", "up"]
 
 function createDayBlock(ctx, data, d, w, h = true) {
     let str = h ? `&#128198; ${days[d]} [${weeks[w]}]\n\n` : `&#128309; ${days[d]} \n`;
     for(let i = 0; i < data.length; ++i) {
-        str += (h ? dark : mark) + " " + data[i].time + "\n" + data[i].content + '\n'; 
+        if(data[i].content == 'ВОЕННАЯ ПОДГОТОВКА') {
+            str += 'ВОЕННАЯ ПОДГОТОВКА\n';
+            break;
+        }
+        else
+            str += (h ? dark : mark) + " " + data[i].time + "\n" + data[i].content + '\n'; 
     }
     if(data.length == 0)
         str += "ВЫХОДНОЙ\n"
