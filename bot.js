@@ -89,8 +89,8 @@ const sc =
     });
 
 const bot = new vkBot({
-   token : "85852badef2e576c898f6389e54da93c3970f2aad5e3264683e27a8abda0c710f188a92308e99c6653d81",
-   group_id : 171210583
+   token : "6a0ac777d5312fd4242c4b3c0fd6b2428e9368b16d2ede70d7a78be92dcd37ddce53eab0bc551a5f1b7d8",
+   group_id : 186457555
 });
 
 
