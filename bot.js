@@ -5,11 +5,29 @@ const Scene = require('node-vk-bot-api/lib/scene')
 const Stage = require('node-vk-bot-api/lib/stage')
 const Session = require('node-vk-bot-api/lib/session')
 
+Date.prototype.getUTCTime = function () {
+    return this.getTime() - (this.getTimezoneOffset() * 60000);
+};
+
 let settings = require('./set');
 
 main();
 async function main() {
 let $ = require('./map');
+
+let tmpLog = console.log;
+console.log = (msg, b = false) => {
+    if($) {
+        if(b)
+            $.logNow(msg);
+        else
+            $.log(msg);
+    }
+
+    tmpLog(msg);
+    //process.stderr.write(msg + '\n');
+}
+
 await $.init();
 
 require('./update');
@@ -102,11 +120,14 @@ bot.use((new Stage(sc)).middleware());
 
 bot.use(async (ctx,next) => {
     ++settings.active;
-    console.log('one up. now: ' + settings.active);
+    console.log('got event');
+    console.log("I've been asked: " + ctx.message.text);
     ctx.reply = (...args) => {
         ctx.bot.sendMessage(ctx.message.peer_id || ctx.message.user_id, ...args);
         --settings.active;
-        console.log('one down. now: ' + settings.active);
+        console.log('I answered: ' + args[0]);
+        console.log('pipe finished');
+        $.logDown();
       }
 
       next();
@@ -134,10 +155,14 @@ bot.use(async (ctx, next) => {
 });
 
 bot.use(async (ctx, next) => {
+    console.log("Who's there?")
     let user = await $.user(ctx.message.user_id ? ctx.message.user_id : ctx.message.peer_id);
-    if(!user)
+    if(!user) {
+        console.log("I don't know! Let's meet!")
         ctx.scene.enter('meet');
+    }
     else {
+        console.log("Oh! It's: " + user.userId);
         ctx.uid = user.userId;
         ctx.group = user.group;
         ctx.sub = user.sub;
@@ -299,12 +324,12 @@ bot.command('test', async (ctx) => {
 });
 
 bot.command('#bug', async (ctx) => {
-    $.log(ctx.message.user_id,ctx.message.text.substring(5),0);
+    $.logBug(ctx.message.user_id,ctx.message.text.substring(5),0);
     ctx.reply("Мы скоро все починим. Спасибо за помощь!");
 });
 
 bot.command('#info', async (ctx) => {
-    $.log(ctx.message.user_id,ctx.message.text.substring(5),1);
+    $.logBug(ctx.message.user_id,ctx.message.text.substring(5),1);
     ctx.reply("Ничего себе! Будем знать!");
 });
 
@@ -410,43 +435,16 @@ bot.command('exit', (ctx) => {
 });
 
 let wrongQuestionStrings = [
-    "Я не знаю такой команды. Напиши help, чтоб посмотреть что я умею",
-    "Не понимаю о чем ты, нужна помощь? help",
-    "Слушай, мне кажется тебе нужно написать help",
-    "..."
+    "help - список команд"
 ];
-let wQSMem = []
 
 bot.use((ctx,next) => {
-    let i = wQSMem.findIndex(el => el.id == ctx.message.user_id);
-    if(i != -1)
-    {
-        if(wQSMem[i].index == 2)
-        {
-            wQSMem.splice(i,1);
-            ctx.reply(wrongQuestionStrings[3], null, Markup.keyboard([
-                Markup.button('HELP', 'primary'),
-            ]).oneTime());
-        }
-        else
-            ctx.reply(wrongQuestionStrings[++wQSMem[i].index]);
-    }
-    else
-    {
-        console.log(ctx.message.user_id + " <- Made wrong command");
-
-        wQSMem.push({
-            id : ctx.message.user_id,
-            index : 0
-        })
-
-        ctx.reply(wrongQuestionStrings[0]);
-    }
-    
+    console.log(ctx.message.peer_id + " in pipe line end");
+    ctx.reply(wrongQuestionStrings[0]);
 });
 
 bot.startPolling(() => {
-    console.log("I'm online");
+    console.log("I'm online", true);
 })
 
 let days = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];

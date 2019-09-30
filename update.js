@@ -22,10 +22,10 @@ function download(url, lock) {
         stream.on('finish', () => {
             stream.close();
             var spawn = require("child_process").spawn;
-            console.log("./data/data"+lock+".xls");
+            console.log("./data/data"+lock+".xls", true);
             let proc = spawn('python', ["./xlsparser.py","./data/data"+lock+".xls","./outtmp/ttOut"+lock+".json"]);
             proc.stdout.on('data', d=> {
-                console.log(d);
+                console.log(d, true);
             });
             proc.on('exit', d => {
                 resolve("DONE PROC #" + lock);
@@ -48,7 +48,7 @@ let func = async () => {
         if(links[i].href.startsWith("http://www.itmm.unn.ru/files/")) {
             if(!(await mapper.checkLink(j,links[i].href))) {
                 let res = await download(links[i].href,j);
-                console.log(res);
+                console.log(res, true);
                 changed = true;
             }
             ++j;

@@ -26,7 +26,7 @@ async function dataUpdate() {
 
             await time.insertOne(data[j]);
         }
-        console.log(`Done ${j} items`);
+        console.log(`Done ${j} items`, true);
     }
 
     //Group hash recount
@@ -167,12 +167,43 @@ module.exports = {
     delete: async (id) => {
         user.deleteOne({ userId : id});
     },
-    log : async (id, text, lvl) => {
+    logBug : async (id, text, lvl) => {
         log.insertOne({
             userId : id,
             message : text,
             lvl : lvl
         });
+    },
+    logNow : (msg) => {
+        log.insertOne({
+            msg : msg,
+            date : (new Date()).getUTCTime(),
+        });
+    },
+    logData : {},
+    log : async (msg) => {
+        if(!this.pipesCount)
+            this.pipesCount = 0;
+        if(!this.logData) {
+            this.pipesCount++;
+            this.logData = { num : this.pipesCount};
+        }
+        if(!this.logData.pipe)
+            this.logData.pipe = [];
+        this.logData.pipe.push({
+            msg : msg,
+            date : (new Date()).getUTCTime()
+        });
+    },
+    getLog : async (offset, limit, from, to, msg) => {
+        return await log.find({
+            date : { $gte : from, $lte : to},
+        }).sort({_id : -1}).skip(offset).limit(limit).toArray();
+    },
+    logDown : async () => {
+        this.logData.date = (new Date()).getUTCTime();
+        log.insertOne(this.logData);
+        this.logData = null;
     },
     checkLink : async (id, href) => {
         let data = (await link.findOne({num:id}));
