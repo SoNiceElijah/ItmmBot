@@ -13,6 +13,7 @@ let $ = require('./map');
 await $.init();
 
 require('./update');
+require('./monitor');
 
 const mainKeys =  [
     Markup.keyboard([
@@ -89,8 +90,9 @@ const sc =
     });
 
 const bot = new vkBot({
-   token : "6a0ac777d5312fd4242c4b3c0fd6b2428e9368b16d2ede70d7a78be92dcd37ddce53eab0bc551a5f1b7d8",
-   group_id : 186457555
+    //DEV!!!!!!!!!!!
+   token : "386d6e3868e410330449f0fd768fffa917b775f92bfa03423408ac40e102f77c52704e3468fe4f035c211",
+   group_id : 186937939
 });
 
 
