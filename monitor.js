@@ -1,11 +1,14 @@
 var express = require('express');
 var app = express();
 
+var bodyParser = require('body-parser')
+
 let $ = require('./map');
 
 app.set('views','./view');
 app.set('view engine','pug');
 
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
 app.get('/', async (req,res) => {
@@ -16,7 +19,7 @@ app.get('/log', async (req,res) => {
     res.render('log');
 });
 
-app.get('/logData', async (req,res) => {
+app.post('/logData', async (req,res) => {
     let offset = 0;
     if(parseInt(req.query['o']))
         offset = parseInt(req.query['o']);
@@ -30,8 +33,8 @@ app.get('/logData', async (req,res) => {
     if(req.query['t'] && new Date(req.query['t']))
         to = parseInt(req.query['t']);
     let msg = '';
-    if(req.query['m'])
-        msg = req.query['m'];
+    if(req.body['m'])
+        msg = req.body['m'];
 
     let data = await $.getLog(offset,limit, from, to, msg);
     data = data.map(el => {

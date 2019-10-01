@@ -5,26 +5,31 @@ Date.prototype.getUTCTime = function () {
 let offset = 0;
 let limit = 10;
 
+let from;
+let to;
+let msg;
+
 $('#from').val();
 $('#to').val();
 
 render();
-function render(from,to,msg) {
+function render() {
 
     let url = '/logData?o=' + offset + '&s=' + limit;
 
+    let pd = {}
     if(from)
         url += '&f=' + from;
     if(to)
         url += '&t=' + to;
     if(msg)
-        url += '&m=' + msg;
+        pd.m = msg;
 
     console.log('inside');
     $('#loading').css('display','flex');
     $('#more').css('display','none');
 
-    $('#loadPlace').load(url,() => {
+    $('#loadPlace').load(url,pd,() => {
         console.log('DONE');
         $('#mainList').html($('#mainList').html() + $('#loadPlace').html());
 
@@ -43,13 +48,13 @@ $('#more').click((e) => {
 
 $('#go').click((e) => {
 
-    let from = new Date($('#from').val());
-    let to = new Date($('#to').val());
-    let msg = $('#msg').val();
+    from = new Date($('#from').val()).getUTCTime();
+    to = new Date($('#to').val()).getUTCTime();
+    msg = $('#msg').val();
 
     offset = 0;
     $('#mainList').html('');
-    render(from.getUTCTime(),to.getUTCTime(), msg );
+    render();
 
     console.log(from.getUTCTime());
     console.log(to.getUTCTime());
@@ -60,6 +65,15 @@ $('#go').click((e) => {
 $('#clear').click((e) => {
     offset = 0;
     $('#mainList').html('');
+
+    from = null;
+    to = null;
+    msg = null;
+
+    $('#from').val('');
+    $('#to').val('');
+    $('#msg').val('');
+
     render();
 });
 

@@ -196,9 +196,20 @@ module.exports = {
         });
     },
     getLog : async (offset, limit, from, to, msg) => {
-        return await log.find({
-            date : { $gte : from, $lte : to},
-        }).sort({_id : -1}).skip(offset).limit(limit).toArray();
+        if(!msg) {
+            return await log.find({
+                date : { $gte : from, $lte : to},
+            }).sort({_id : -1}).skip(offset).limit(limit).toArray();
+        }
+        else {
+            return await log.find({
+                $or : [
+                    { msg : { $regex : ".*" + msg + "*." } },
+                    { pipe : { $elemMatch : {msg : { $regex : ".*" + msg + "*." }}} }
+                ],
+                date : { $gte : from, $lte : to},
+            }).sort({_id : -1}).skip(offset).limit(limit).toArray();
+        }
     },
     logDown : async () => {
         this.logData.date = (new Date()).getUTCTime();
