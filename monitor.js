@@ -19,6 +19,70 @@ app.get('/log', async (req,res) => {
     res.render('log');
 });
 
+app.get('/mirror', async (req,res) => {
+    let list = await $.collections();
+    res.render('mirror', { h : list});
+});
+
+app.post('/mirrorData', async (req,res) => {
+
+    if(!req.body['c'])
+        req.body['c'] = 'timeTable';
+
+    let offset = 0;
+    if(parseInt(req.query['o']))
+        offset = parseInt(req.query['o']);
+    let limit = 10;
+    if(parseInt(req.query['s']))
+        limit = parseInt(req.query['s']);
+
+    let list = await $.collections(req.body['c'], offset, limit, req.body['q']);
+    let size = await $.count(req.body['c'], req.body['q']) ;
+
+    list = list.map(el => { 
+        let obj = Object.assign({}, el);
+        delete obj._id;
+        return {i : el._id, text : JSON.stringify(obj, null, '\t')};
+    });
+    res.render('partial/mirrorList', { d : list, s : size, o : offset, l : Math.min(offset + limit, size)});
+});
+
+app.post('/mirrorUpdate', async (req,res) => {
+
+    if(!req.body['c'])
+        return res.send(400);
+
+    if(!req.body['i'])
+        return res.send(400);
+
+    if(!req.body['q'])
+        return res.send(400);
+
+    $.collectionUpdate(req.body['c'], req.body['i'], req.body['q']);
+    res.send(200);
+});
+
+app.post('/mirrorDelete', async (req,res) => {
+    if(!req.body['i'])
+        return res.send(400);
+    if(!req.body['c'])
+        return res.send(400);
+
+    $.collectionDelete(req.body['c'], req.body['i']);
+    res.send(200);
+    
+});
+
+app.post('/mirrorAdd', async (req,res) => {
+    if(!req.body['q'])
+        return res.send(400);
+    if(!req.body['c'])
+        return res.send(400)
+
+    $.collectionInsert(req.body['c'], req.body['q']);
+    res.send(200);
+});
+
 app.post('/logData', async (req,res) => {
     let offset = 0;
     if(parseInt(req.query['o']))

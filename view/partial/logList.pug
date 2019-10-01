@@ -2,7 +2,7 @@ ul
     each obj, index in d
         li
             .pipe-out-box
-                .pipe-title
+                .pipe-title(title=obj.num ? "connection number " + obj.num : obj.msg)
                     .pipe-date-title= obj.date
                     .pipe-name= obj.num ? "connection number " + obj.num : obj.msg                                    
                 .pipe-inside-list

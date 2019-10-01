@@ -88,6 +88,10 @@ a {
 .pipe-title {
     line-height: 40px;
     height: 40px;
+
+    text-overflow: ellipsis;
+
+    overflow: hidden;
 }
 
 .pipe-name {
@@ -98,6 +102,8 @@ a {
     font-weight: 300;
 
     padding-right: 10px;
+
+ 
 }
 
 .pipe-date-title  {

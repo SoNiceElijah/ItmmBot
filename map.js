@@ -43,13 +43,13 @@ async function dataUpdate() {
                 .digest('hex');
             
             if(!(await module.exports.checkHash(gs[i],  j + '', hash))) {
-                //await event.insertOne({
-                //    type : 'update',
-                //    content : {
-                //        group : gs[i],
-               //         sub : j + ''
-               //     }
-                //});
+                await event.insertOne({
+                    type : 'update',
+                    content : {
+                       group : gs[i],
+                        sub : j + ''
+                    }
+                });
                 console.log("g: " + gs[i] + " sub: " + j + ' are updated!');
             }
         }
@@ -71,6 +71,51 @@ module.exports = {
             event = db.collection('eventTable');
         }
         catch (ex) {console.log(ex);}
+    },
+    collections : async (name, offset, limit, query) => {
+        if(!name)
+            return await db.listCollections().toArray();
+        else {
+            let q = {}
+            if(query)
+                try {
+                    q = JSON.parse(query);
+                } catch (ex) {q = {}}
+            return await db.collection(name).find(q).sort({_id : -1}).skip(offset).limit(limit).toArray();
+        }
+    },
+    count : async (name, query) => {
+        if(!name)
+            return;
+        let q = {}
+        if(query)
+            try {
+            q = JSON.parse(query);
+            } catch (ex) {}
+        return await db.collection(name).count(q);
+    },
+    collectionUpdate : async (name, id, query) => {
+        let q;
+        try {
+            q = JSON.parse(query);
+            delete q._id;
+        } catch (ex) { return;}
+
+        await db.collection(name).updateOne({
+            _id : mongoClient.ObjectId(id)
+        }, {
+            $set : q
+        })
+    },
+    collectionDelete : async (name, id) => {
+        await db.collection(name).deleteOne({ _id : mongoClient.ObjectId(id)  });
+    },
+    collectionInsert : async (name, query) => {
+        let q;
+        try {
+            q = JSON.parse(query);
+        } catch (ex) { return;}
+        await db.collection(name).insertOne(q);
     },
     update : dataUpdate,   
     getAll : async (g, s) => {
