@@ -7,23 +7,29 @@ let settings = require('./set');
 
 let mapper = require('./map');
 
-const file = [
-    "./data/data0.xls",
-    "./data/data1.xls",
-    "./data/data2.xls",
-    "./data/data3.xls"
-]
+function file(e) {
+    return "./data/data" + e + ".xls";
+}
 
 function download(url, lock) {
     return new Promise((resolve, reject) => {
     const tmp = http.get(url, (r) => {
-        let stream = fs.createWriteStream(file[lock]);
+        let stream = fs.createWriteStream(file(lock));
         r.pipe(stream);
         stream.on('finish', () => {
             stream.close();
             var spawn = require("child_process").spawn;
             console.log("./data/data"+lock+".xls", true);
-            let proc = spawn('python', ["./xlsparser.py","./data/data"+lock+".xls","./outtmp/ttOut"+lock+".json"]);
+            let proc = spawn('python', [
+                "./xlsparser.py",
+                "./data/data"+lock+".xls",
+                "./outtmp/ttOut"+lock+".json", 
+                settings.docTable[lock].g,
+                settings.docTable[lock].o
+            ]);
+            proc.on('uncaughtException', (err) => {
+                console.log(Utf8ArrayToStr(err),true);
+            });
             proc.stdout.on('data', d=> {
                 console.log(Utf8ArrayToStr(d), true);
             });
@@ -53,6 +59,23 @@ let func = async () => {
             }
             ++j;
     }
+
+    res = await axios.get("http://www.itmm.unn.ru/raspisanie-studentov-magistratury/") ;
+    
+    dom = new jsdom.JSDOM(res.data);
+    document = dom.window.document;
+    links = document.getElementsByTagName('a');
+
+    for(let i = 0, j = 4; j < 5 && i < links.length; ++i)
+        if(links[i].href.startsWith("http://www.itmm.unn.ru/files/")) {
+            if(!(await mapper.checkLink(j,links[i].href))) {
+                let res = await download(links[i].href,j);
+                console.log(res, true);
+                changed = true;
+            }
+            ++j;
+        }
+
 
     if(changed) {
         settings.freeze = true;
@@ -95,6 +118,6 @@ function Utf8ArrayToStr(array) {
 }
 
 func();
-setInterval (func, 10 * 60 * 1000); // 10 min = 
+setInterval (func, 20 * 60 * 1000); // 20 min = 
 
 

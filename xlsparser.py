@@ -2,10 +2,12 @@ import xlrd
 import json
 import sys 
 
-start_offset = 15
-
-#sys.argv.append("./data/data2.xls")
+#sys.argv.append("./data/data0.xls")
 #sys.argv.append("test")
+#sys.argv.append(12)
+#sys.argv.append(15)
+
+start_offset = int(sys.argv[4])
 
 time_array = ["7:30", "9:10", "10:50", "13:00", "14:40", "16:20", "18:00", "19:40"]
 day_array = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -23,6 +25,7 @@ def is_left_border(i,j):
 
     if(i == MIN_WIDTH):
         return True
+
 
     cell = sheet.cell(j,i)
     style = wb.xf_list[cell.xf_index]
@@ -110,11 +113,11 @@ def block(i,j):
     data = ""
 
     cell = sheet.cell(j,i)
-    style = wb.xf_list[cell.xf_index]
+    #style = wb.xf_list[cell.xf_index]
 
-    if(style.background.pattern_colour_index == 64 and cell.value == '') :
+    #if(style.background.pattern_colour_index == 64 and cell.value == '') :
         #print(':' + cell.value + ': lol')
-        return ""
+        #return ""
  
     if(type(cell.value) == float):
         cell.value = int(cell.value)
@@ -149,7 +152,10 @@ def block(i,j):
         except Exception:
             return data
     
-    return data
+    if(data.isspace()):
+        return ""
+    else:
+        return data
 
 with open(sys.argv[2] + ".log", "w",  encoding='utf8') as log:
     try:
@@ -159,19 +165,15 @@ with open(sys.argv[2] + ".log", "w",  encoding='utf8') as log:
 
         log.write( str(sheet.ncols) + " " + str(sheet.nrows) + "\n")
 
+        group_offset = int(sys.argv[3])
         for i in range(2, sheet.ncols - 1, 2):
 
             log.write(str(i) + " <- i\n")
-            if(sheet.cell(12,i).value != ""):
-                group_array.append(sheet.cell(12,i).value)
+            if(sheet.cell(group_offset,i).value != ""):
+                group_array.append(sheet.cell(group_offset,i).value)
 
         if(group_array.__len__() == 0):
-            log.write("REBIND!!!!!\n")
-            start_offset = 16
-            group_array.clear()
-            for i in range(2, sheet.ncols - 1, 2):
-                if(sheet.cell(13,i).value != ""):
-                    group_array.append(sheet.cell(13,i).value)
+            log.write("WRONG INPUT!!!!!\n")
 
         time = ""
         day = ""
@@ -216,7 +218,7 @@ with open(sys.argv[2] + ".log", "w",  encoding='utf8') as log:
                     time_table.append(obj)
                 log.write("(" + str(i) + " ; " + str(j) + ")\n")
 
-
+        log.write('FINISHED!!!!')
         with open(sys.argv[2], "w",  encoding='utf8') as wf:
             json.dump(time_table, wf, ensure_ascii=False)
 

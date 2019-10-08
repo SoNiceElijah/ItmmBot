@@ -15,8 +15,9 @@ let weeks = ["DOWN", "UP"]
 let settings = require('./set');
 
 async function dataUpdate() {
+    await time.insertOne({x : 1});
     await time.drop();
-    for(let i = 0; i < 4; ++i) {
+    for(let i = 0; i < settings.docTable.length; ++i) {
         let data = require(`./outtmp/ttOut${i}.json`);
         let j = 0;
         for( ; j < data.length; ++j) {
@@ -43,14 +44,16 @@ async function dataUpdate() {
                 .digest('hex');
             
             if(!(await module.exports.checkHash(gs[i],  j + '', hash))) {
-                await event.insertOne({
-                    type : 'update',
-                    content : {
-                       group : gs[i],
-                        sub : j + ''
-                    }
-                });
-                console.log("g: " + gs[i] + " sub: " + j + ' are updated!');
+                if(!settings.mute) {
+                    await event.insertOne({
+                        type : 'update',
+                        content : {
+                        group : gs[i],
+                            sub : j + ''
+                        }
+                    });
+                }
+                console.log("g: " + gs[i] + " sub: " + j + ' are updated!', true);
             }
         }
     }
@@ -80,7 +83,7 @@ module.exports = {
             if(query)
                 try {
                     q = JSON.parse(query);
-                } catch (ex) {q = {}}
+                } catch (ex) {q = {}; console.log(ex.message,true);}
             return await db.collection(name).find(q).sort({_id : -1}).skip(offset).limit(limit).toArray();
         }
     },
@@ -91,7 +94,7 @@ module.exports = {
         if(query)
             try {
             q = JSON.parse(query);
-            } catch (ex) {}
+            } catch (ex) {console.log(ex.message,true);}
         return await db.collection(name).count(q);
     },
     collectionUpdate : async (name, id, query) => {
@@ -99,7 +102,7 @@ module.exports = {
         try {
             q = JSON.parse(query);
             delete q._id;
-        } catch (ex) { return;}
+        } catch (ex) {console.log(ex.message,true); return;}
 
         await db.collection(name).updateOne({
             _id : mongoClient.ObjectId(id)
@@ -114,7 +117,7 @@ module.exports = {
         let q;
         try {
             q = JSON.parse(query);
-        } catch (ex) { return;}
+        } catch (ex) {console.log(ex.message,true); return;}
         await db.collection(name).insertOne(q);
     },
     update : dataUpdate,   
@@ -235,6 +238,7 @@ module.exports = {
         }
         if(!this.logData.pipe)
             this.logData.pipe = [];
+        let ddd = new Date();
         this.logData.pipe.push({
             msg : msg,
             date : (new Date()).getUTCTime()
@@ -264,7 +268,7 @@ module.exports = {
     checkLink : async (id, href) => {
         let data = (await link.findOne({num:id}));
         if(!data) {
-            link.insertOne({num : id, href : href});
+            link.insertOne({num : id, href : href, date : (new Date()).getUTCTime()});
             return false
         }
         if(data.href == href)
@@ -288,14 +292,21 @@ module.exports = {
         }
     },
     link : async (n) => {
-        return await link.findOne({num : n}); 
+        return await link.findOne({num : n});
+    },
+    linkAll : async () => {
+        return await link.find({}).toArray();
     },
     getEvent : async (type) => {
         let data = await event.find({type : type}).toArray();
         await event.deleteMany({type : type});
 
         return data;
+    },
+    getLastCheckDate : async () => {
+        return (await log.find({ msg : "Check update....." }).sort({_id : -1}).limit(1).toArray())[0].date;
     }
+
 }
 
 //RobG ty

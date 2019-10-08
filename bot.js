@@ -6,7 +6,10 @@ const Stage = require('node-vk-bot-api/lib/stage')
 const Session = require('node-vk-bot-api/lib/session')
 
 Date.prototype.getUTCTime = function () {
-    return this.getTime() - (this.getTimezoneOffset() * 60000);
+
+    let deb = this.getTimezoneOffset();
+
+    return this.getTime() + (this.getTimezoneOffset() * 60000);
 };
 
 let settings = require('./set');

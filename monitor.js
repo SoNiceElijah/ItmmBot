@@ -1,6 +1,8 @@
 var express = require('express');
 var app = express();
 
+const fs = require('fs');
+
 var bodyParser = require('body-parser')
 
 let $ = require('./map');
@@ -10,6 +12,7 @@ app.set('view engine','pug');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
+app.use(express.static('outtmp'));
 
 app.get('/', async (req,res) => {
     res.render('index');
@@ -25,7 +28,36 @@ app.get('/mirror', async (req,res) => {
 });
 
 app.get('/behavior', async (req,res) => {
-    res.render('behavior');
+    let date = await $.getLastCheckDate();
+    let links = await $.linkAll();
+
+    let stats = links.map(el => {
+        let n1 = './data/data' + el.num + '.xls';
+        let lc1 = fs.statSync(n1).mtime;
+        let s1 = lc1.getUTCTime() - el.date;
+
+        let n2 = './outtmp/ttOut' + el.num + '.json';
+        let lc2 = fs.statSync(n2).mtime;
+        let s2 = lc1.getUTCTime() - el.date;
+
+        return {
+            ...el,
+            fs1 : n1,
+            ts1 : dateToString(new Date(lc1.getUTCTime())),
+            s1 : s1 >= 20 * 60 * 1000 ? "old" : "ok",
+            fs2 : n2,
+            ts2 : dateToString(new Date(lc2.getUTCTime())),
+            s2 : s2 >= 20 * 60 * 1000 ? "old" : "ok",
+            file : '/ttOut' + el.num + '.json.log'
+        }
+    });
+
+    stats = stats.map(el => {
+        el.date = dateToString(new Date(el.date));
+        return el;
+    })
+
+    res.render('behavior',{load : date, links : stats});
 });
 
 app.post('/mirrorData', async (req,res) => {
@@ -123,7 +155,8 @@ app.listen(5000,() => {
 });
 
 
-function dateToString(d) {
-
+function dateToString(d, offset = true) {
+    if(offset)
+        d = new Date(d.getTime() + 3 * 60 * 60 * 1000); //timezone offset
     return d.toLocaleDateString() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ":" + d.getMilliseconds();
 }

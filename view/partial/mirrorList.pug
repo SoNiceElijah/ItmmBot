@@ -1,12 +1,12 @@
 .db-content-list
+    .db-countent-size= o + ' - ' + l + ' / ' + s + ' documents'
+    .hidden.db-content-item(id='item0')
+        .db-content-item-control
+            .button.tiny#save(onclick="save('0');") save
+            .button.tiny#cancel(onclick="cancel('0');") cancel
+        textarea(id='ta0').db-content-item-text 
+        .db-content-item-text(id='tx0')
     if s != 0        
-        .db-countent-size= o + ' - ' + l + ' / ' + s + ' documents'
-        .hidden.db-content-item(id='item0')
-            .db-content-item-control
-                .button.tiny#save(onclick="save('0');") save
-                .button.tiny#cancel(onclick="cancel('0');") cancel
-            textarea(id='ta0').db-content-item-text 
-            .db-content-item-text(id='tx0')
         each el, i in d
             .db-content-item(id='item'+el.i)
                 .db-content-item-control
