@@ -24,6 +24,10 @@ app.get('/mirror', async (req,res) => {
     res.render('mirror', { h : list});
 });
 
+app.get('/behavior', async (req,res) => {
+    res.render('behavior');
+});
+
 app.post('/mirrorData', async (req,res) => {
 
     if(!req.body['c'])
