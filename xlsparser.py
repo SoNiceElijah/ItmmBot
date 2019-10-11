@@ -2,7 +2,7 @@ import xlrd
 import json
 import sys 
 
-#sys.argv.append("./data/data0.xls")
+#sys.argv.append("./data/data3.xls")
 #sys.argv.append("test")
 #sys.argv.append(12)
 #sys.argv.append(15)
@@ -26,6 +26,11 @@ def is_left_border(i,j):
     if(i == MIN_WIDTH):
         return True
 
+    o = 1
+    k = i
+    while(sheet.colinfo_map[k - 1].hidden and k > MIN_WIDTH):
+        o += 1
+        k -= 1
 
     cell = sheet.cell(j,i)
     style = wb.xf_list[cell.xf_index]
@@ -33,7 +38,7 @@ def is_left_border(i,j):
 
     b1 =  b.left_line_style != 0
 
-    cell = sheet.cell(j ,i - 1)
+    cell = sheet.cell(j ,i - o)
     style = wb.xf_list[cell.xf_index]
     b = style.border
 
@@ -46,13 +51,19 @@ def is_right_border(i,j):
     if(i == MAX_WIDTH):
         return True
 
+    o = 1
+    k = i
+    while(sheet.colinfo_map[k + 1].hidden and k < MAX_WIDTH):
+        o += 1
+        k += 1
+
     cell = sheet.cell(j,i)
     style = wb.xf_list[cell.xf_index]
     b = style.border
 
     b1 =  b.right_line_style != 0
 
-    cell = sheet.cell(j ,i + 1)
+    cell = sheet.cell(j ,i + o)
     style = wb.xf_list[cell.xf_index]
     b = style.border
 
@@ -100,7 +111,7 @@ def is_top_border(i,j):
 
 
 def block(i,j):
-    if(i == 3 and j == 47):
+    if(i == 28 and j == 70):
         v = 10
 
     #Move left top
@@ -166,11 +177,24 @@ with open(sys.argv[2] + ".log", "w",  encoding='utf8') as log:
         log.write( str(sheet.ncols) + " " + str(sheet.nrows) + "\n")
 
         group_offset = int(sys.argv[3])
-        for i in range(2, sheet.ncols - 1, 2):
+        group_buff = ""
+        for i in range(2, sheet.ncols):
+            sr = sheet.cell(group_offset,i).value
+            nr = sheet.cell(group_offset,i + 1).value
+
+            if(not (sr.isspace() or sr == '')):
+                group_buff = sr
+            
 
             log.write(str(i) + " <- i\n")
-            if(sheet.cell(group_offset,i).value != ""):
-                group_array.append(sheet.cell(group_offset,i).value)
+            group_array.append(group_buff.strip())
+
+            if((sr.isspace() or sr == '') and (nr.isspace() or nr == '')):
+                break
+
+            
+        for i in group_array:
+            log.write(i + '\n')
 
         if(group_array.__len__() == 0):
             log.write("WRONG INPUT!!!!!\n")
@@ -183,19 +207,30 @@ with open(sys.argv[2] + ".log", "w",  encoding='utf8') as log:
         content = ""
 
 
-        log.write(str(2 + 2 * group_array.__len__()) + " <- final width lenght\n")
+        log.write(str(2 + group_array.__len__()) + " <- final width lenght\n")
 
         MIN_HEIGHT = start_offset
-        MAX_WIDTH = 2 + 2 * group_array.__len__() - 1
-        MAX_HEIGHT = 111 + (start_offset - 15) - 1
+        MAX_WIDTH = 2 + group_array.__len__() - 1
+        MAX_HEIGHT = 111 + (start_offset - 15) 
 
-        for i in range(2, 2 + 2 * group_array.__len__()):
+        n_sub = 1
+        lg = group_array[0]
+        for i in range(2, 2 + group_array.__len__()):
             if(sheet.colinfo_map[i].hidden):
                 continue
-            print("------------- " + str(group_array[int(i/2) - 1]) + " " + "(" +str(i % 2 + 1) + ")" + "-------------\n")
 
-            group = str(group_array[int(i/2)- 1])
-            subgroup = str(i % 2 + 1)
+            group = str(group_array[i - 2])
+
+            if(group != lg):
+                n_sub = 1
+            else:
+                n_sub += 1
+
+            lg = group
+            subgroup = str(n_sub)
+
+            print("------------- " + group + " " + "(" +subgroup + ")" + "-------------\n")
+
             for j in range(start_offset, 111 + (start_offset - 15)):
                 res = block(i,j)
                 if (j - start_offset) % 16 == 0:
