@@ -340,7 +340,7 @@ bot.command('Назад', async (ctx) => {
     ctx.reply('ok', null, mainKeys[ctx.set]);
 });
 
-let setKeys = {};
+/* let setKeys = {};
 bot.command('Настройки', async (ctx) => {
 
     setKeys = genSettigsKeys(ctx);
@@ -383,7 +383,7 @@ function genSettigsKeys(ctx) {
         ]
     ]);
 }
-
+ */
 
 
 let mark = "&#128313;";
