@@ -6,6 +6,11 @@ html
         style
             include behavior.css
     body
+        .header
+            a.button(href="/") главная
+            a.button(href="/log") логи
+            a.button(href="/mirror") зеркало
+            .button-active управление 
         .main 
             h1 BEHAVIOR PAGE
             p
@@ -13,10 +18,17 @@ html
 
 
             .load-progress-time
-                span#procTime 00:00 
+                span#procTime 00:00
 
             .load-progress-panel
                 .load-progress-line#procLine(proc=load)
+
+            .button-panel
+                if(mute)
+                    .button#mute unmute
+                else
+                    .button#mute mute
+                .button#force force update 
             .time-table-counstructor
                 .monitor-date-list
                     each el in links
@@ -53,6 +65,8 @@ html
                                             span.red= el.s2
                                         else
                                             span= el.s2
+        .footer SoNiceElijah 
+            p 2019
                 
 
 

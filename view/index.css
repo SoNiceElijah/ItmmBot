@@ -45,9 +45,11 @@ a {
 
 .button {
 
+    display: inline-block;
+
     text-align: center;
     margin: auto;
-    width: 300px;
+    width: 170px;
     line-height: 40px;
     height: 40px;
     border-radius: 3px;
@@ -72,4 +74,9 @@ a {
     border: 1px solid #a4afaf;
     background: #a4afaf;
     color: #111111;
+}
+
+.buttons-panel {
+    display: flex;
+    justify-content: space-around;
 }

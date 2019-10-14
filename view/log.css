@@ -57,6 +57,38 @@ a {
 
 
     cursor: pointer;
+
+    display: inline-block;
+}
+
+.header .button {
+    width: 150px;
+    margin-right: 10px;
+}
+
+.button-active {
+    border: 1px solid #a4afaf;
+    background: #a4afaf;
+    color: #111111;
+
+    display: inline-block;
+
+    text-align: center;
+    margin: auto;
+    width: 150px;
+    line-height: 40px;
+    height: 40px;
+    border-radius: 3px;
+    user-select: none;
+
+    margin-right: 10px;
+}
+
+.header {
+    padding-top: 40px;
+    margin: auto; 
+
+    width: 800px;
 }
 
 .button:hover {
@@ -260,4 +292,8 @@ img {
 #go, #clear {
     display: inline-block;
     margin-right: 10px;
+}
+
+.main {
+    min-height: 800px;
 }

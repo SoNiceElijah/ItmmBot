@@ -1,5 +1,5 @@
 Date.prototype.getUTCTime = function () {
-    return this.getTime();
+    return this.getTime() - 3 * 60 * 60 * 1000;
 };
 
 let offset = 0;
@@ -56,8 +56,8 @@ $('#go').click((e) => {
     $('#mainList').html('');
     render();
 
-    console.log(from.getUTCTime());
-    console.log(to.getUTCTime());
+    console.log(from);
+    console.log(to);
     console.log();
 
 });

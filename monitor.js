@@ -3,16 +3,26 @@ var app = express();
 
 const fs = require('fs');
 
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser').urlencoded;
+var cookieParser  = require('cookie-parser')
 
 let $ = require('./map');
+let settings = require('./set');
 
 app.set('views','./view');
 app.set('view engine','pug');
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser({ extended: false }));
+app.use(cookieParser());
 app.use(express.static('public'));
 app.use(express.static('outtmp'));
+
+app.use(async (req,res,next) => {
+    if(req.cookies['token'] == "megabot3000")
+        next();
+    else
+        res.render('auth');
+});
 
 app.get('/', async (req,res) => {
     res.render('index');
@@ -38,16 +48,16 @@ app.get('/behavior', async (req,res) => {
 
         let n2 = './outtmp/ttOut' + el.num + '.json';
         let lc2 = fs.statSync(n2).mtime;
-        let s2 = lc1.getUTCTime() - el.date;
+        let s2 =  el.date - lc2.getUTCTime();
 
         return {
             ...el,
             fs1 : n1,
             ts1 : dateToString(new Date(lc1.getUTCTime())),
-            s1 : s1 >= 20 * 60 * 1000 ? "old" : "ok",
+            s1 : s1 >= 2 * 60 * 1000 ? "old" : "ok",
             fs2 : n2,
             ts2 : dateToString(new Date(lc2.getUTCTime())),
-            s2 : s2 >= 20 * 60 * 1000 ? "old" : "ok",
+            s2 : Math.abs(lc2.getUTCTime() - lc1.getUTCTime()) >= 2 * 60 * 1000 ? "old" : "ok",
             file : '/ttOut' + el.num + '.json.log'
         }
     });
@@ -57,7 +67,7 @@ app.get('/behavior', async (req,res) => {
         return el;
     })
 
-    res.render('behavior',{load : date, links : stats});
+    res.render('behavior',{load : date, links : stats, mute : settings.mute});
 });
 
 app.post('/mirrorData', async (req,res) => {
@@ -148,6 +158,25 @@ app.post('/logData', async (req,res) => {
     })
     res.render('partial/logList',{d :data});
     
+});
+
+app.post('/changeMute', async (req,res) => {    
+    settings.mute = !settings.mute;
+    res.send(200);
+});
+
+app.post('/forceUpdate', async (req,res) => {
+    $.dropLink();
+
+    settings.siteFreeze = true;
+    settings.forceUpdate();
+
+    let i = setInterval(() => {
+        if(!settings.siteFreeze) {
+            res.send(200);
+            clearInterval(i);
+        }
+    },40)
 });
 
 app.listen(5000,() => {

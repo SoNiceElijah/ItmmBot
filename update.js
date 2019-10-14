@@ -28,10 +28,10 @@ function download(url, lock) {
                 settings.docTable[lock].o
             ]);
             proc.on('uncaughtException', (err) => {
-                console.log(Utf8ArrayToStr(err),true);
+               // console.log(Utf8ArrayToStr(err),true);
             });
             proc.stdout.on('data', d=> {
-                console.log(Utf8ArrayToStr(d), true);
+               // console.log(Utf8ArrayToStr(d), true);
             });
             proc.on('exit', d => {
                 resolve("DONE PROC #" + lock);
@@ -116,6 +116,8 @@ function Utf8ArrayToStr(array) {
 
     return out;
 }
+
+settings.forceUpdate = func;
 
 func();
 setInterval (func, 20 * 60 * 1000); // 20 min = 

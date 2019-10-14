@@ -1,7 +1,7 @@
 module.exports.freeze = false;
 module.exports.active = 0;
 
-module.exports.mute = false;
+module.exports.mute = true;
 module.exports.docTable = [
     {
         g : 12,
@@ -24,3 +24,6 @@ module.exports.docTable = [
         o : 17,
     },
 ];
+
+module.exports.forceUpdate = () => {}
+module.exports.siteFreeze = false;

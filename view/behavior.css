@@ -24,7 +24,6 @@ p{
 }
 
 .button {
-
     text-align: center;
     margin: auto;
     width: 300px;
@@ -37,12 +36,44 @@ p{
 
 
     cursor: pointer;
+
+    display: inline-block;
+}
+
+.header .button {
+    width: 150px;
+    margin-right: 10px;
+}
+
+.button-active {
+    border: 1px solid #a4afaf;
+    background: #a4afaf;
+    color: #111111;
+
+    display: inline-block;
+
+    text-align: center;
+    margin: auto;
+    width: 150px;
+    line-height: 40px;
+    height: 40px;
+    border-radius: 3px;
+    user-select: none;
+}
+
+.header {
+    padding-top: 40px;
+    margin: auto; 
+
+    width: 800px;
 }
 
 .button:hover {
     border: 1px solid #a4afaf;
     color: #a4afaf;
 }
+
+
 
 
 .button:active {
@@ -188,4 +219,72 @@ a {
 
 .main {
     padding-bottom: 200px;
+}
+
+.button-panel {
+    display: flex;
+    justify-content : space-around;
+
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.button-panel .button {
+    width: 390px;
+}
+
+.footer {
+    width: 100%;
+    text-align: center;
+    color: #b6b6b6;
+    line-height: 50px;
+    height: 80px;
+
+    font-weight: 300;
+    user-select: none;
+
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.footer:hover {
+    color: #3bcfd4;
+}
+
+.footer p {
+    color: #a1a1a1;
+    height: 14px;
+    line-height: 14px;
+    font-size: 14px;
+
+    margin-bottom: 0;
+    margin-top: -14px;
+}
+
+.button[loading] {
+    border: 1px solid #44b2c0;
+    color: #44b2c0;
+
+    cursor : default;
+}
+
+
+.button[loading]:hover {
+    border: 1px solid #44b2c0;
+    color: #44b2c0;
+
+    cursor : default;
+}
+
+.button[loading]:active {
+    border: 1px solid #44b2c0;
+    color: #44b2c0;
+
+    background: transparent;
+
+    cursor : default;
+}
+
+.main {
+    min-height: 800px;
 }

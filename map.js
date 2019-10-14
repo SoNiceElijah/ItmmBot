@@ -58,6 +58,7 @@ async function dataUpdate() {
         }
     }
 
+    settings.siteFreeze = false;
     settings.freeze = false;
 }
 
@@ -274,7 +275,7 @@ module.exports = {
         if(data.href == href)
             return true;
         else {
-            link.updateOne({num : id}, {$set : {href : href}});
+            link.updateOne({num : id}, {$set : {href : href, date : (new Date()).getUTCTime()}});
             return false;
         }
     },
@@ -296,6 +297,9 @@ module.exports = {
     },
     linkAll : async () => {
         return await link.find({}).toArray();
+    },
+    dropLink: async () => {
+        link.drop();
     },
     getEvent : async (type) => {
         let data = await event.find({type : type}).toArray();

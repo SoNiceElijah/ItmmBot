@@ -2,10 +2,10 @@ import xlrd
 import json
 import sys 
 
-#sys.argv.append("./data/data3.xls")
-#sys.argv.append("test")
-#sys.argv.append(12)
-#sys.argv.append(15)
+sys.argv.append("./data/data0.xls")
+sys.argv.append("test")
+sys.argv.append(12)
+sys.argv.append(15)
 
 start_offset = int(sys.argv[4])
 
@@ -180,7 +180,12 @@ with open(sys.argv[2] + ".log", "w",  encoding='utf8') as log:
         group_buff = ""
         for i in range(2, sheet.ncols):
             sr = sheet.cell(group_offset,i).value
-            nr = sheet.cell(group_offset,i + 1).value
+
+            nr = ''
+            try: 
+                nr = sheet.cell(group_offset,i + 1).value
+            except Exception:
+                nr = ''
 
             if(not (sr.isspace() or sr == '')):
                 group_buff = sr
@@ -214,7 +219,7 @@ with open(sys.argv[2] + ".log", "w",  encoding='utf8') as log:
         MAX_HEIGHT = 111 + (start_offset - 15) 
 
         n_sub = 1
-        lg = group_array[0]
+        lg = "none"
         for i in range(2, 2 + group_array.__len__()):
             if(sheet.colinfo_map[i].hidden):
                 continue
