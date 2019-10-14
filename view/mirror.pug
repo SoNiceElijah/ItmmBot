@@ -1,0 +1,41 @@
+html
+    head
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js")
+        link(rel="shortcut icon", href="favicon.png")
+        title BotLogMonitor
+        style
+            include mirror.css
+    body
+        .header
+            a.button(href="/") главная
+            a.button(href="/log") логи
+            .button-active зеркало
+            a.button(href="/behavior") управление 
+        .main 
+            h1 MIRROR PAGE
+            p
+                | Страница, где можно поглазеть на базу данных
+
+            .db-collection-list
+                ul
+                    each item, i in h
+                        li(id='list'+i, onclick="changeTable("+i+")")= item.name
+            input#query(type="text",placeholder='{ "x" : 1}' , name="database_query")
+            .button#go go
+            #loadDataRoot
+            .db-view-place
+                .navigation
+                    .button.little#add add
+                    .button.little#next1 next >
+                    .button.little#prev1 < prev
+                #viewRoot
+                .loading#loading
+                    img(src="/refresh-button.png")
+
+
+        .footer SoNiceElijah 
+            p 2019
+
+          
+    script
+        include mirror.js

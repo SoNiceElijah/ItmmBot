@@ -1,0 +1,38 @@
+html
+    head
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js")
+        link(rel="shortcut icon", href="favicon.png")
+        title BotLogMonitor
+        style
+            include log.css
+    body
+        #particle
+        .header
+            a.button(href="/") главная
+            .button-active логи
+            a.button(href="/mirror") зеркало
+            a.button(href="/behavior") управление 
+        .main
+            h1 LOG PAGE
+            p 
+                | Здесь можно посмотреть весь лог во время работы бота и узнать какие действия он совершал
+            
+            .filter
+                input#from(type="text",placeholder="from", name="bot_date_from")
+                input#to(type="text", placeholder="to",name="bot_date_from")
+                input#msg(type="text", placeholder="message",name="bot_date_from")
+                .button#go go
+                .button#clear clear
+            #loadPlace
+            .pipes-list
+                #mainList
+                .loading#loading
+                    img(src="/refresh-button.png")
+                .button#more more
+                    
+
+        .footer SoNiceElijah 
+            p 2019
+      
+    script
+        include log.js

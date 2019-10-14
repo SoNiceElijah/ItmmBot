@@ -1,0 +1,24 @@
+ul
+    each obj, index in d
+        li
+            .pipe-out-box
+                .pipe-title(title=obj.num ? "connection number " + obj.num : obj.msg)
+                    .pipe-date-title= obj.date
+                    .pipe-name= obj.num ? "connection number " + obj.num : obj.msg                                    
+                .pipe-inside-list
+                    if obj.pipe
+                        each pi, i in obj.pipe
+                            if (i == obj.pipe.length - 1)
+                                .pipe-box.last
+                                    .pipe-marker
+                                    .pipe-marker-line
+                                    .pipe-content-box
+                                        .pipe-msg(title=pi.msg)= pi.msg
+                                        .pipe-date= pi.date
+                            else
+                                .pipe-box
+                                    .pipe-marker
+                                    .pipe-marker-line
+                                    .pipe-content-box
+                                        .pipe-msg(title=pi.msg)= pi.msg
+                                        .pipe-date= pi.date

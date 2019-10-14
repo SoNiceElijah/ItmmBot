@@ -1,0 +1,21 @@
+.db-content-list
+    .db-countent-size= o + ' - ' + l + ' / ' + s + ' documents'
+    .hidden.db-content-item(id='item0')
+        .db-content-item-control
+            .button.tiny#save(onclick="save('0');") save
+            .button.tiny#cancel(onclick="cancel('0');") cancel
+        textarea(id='ta0').db-content-item-text 
+        .db-content-item-text(id='tx0')
+    if s != 0        
+        each el, i in d
+            .db-content-item(id='item'+el.i)
+                .db-content-item-control
+                    div(id="dbset1" + el.i)
+                        .button.tiny#update(onclick="show('"+ el.i + "');") update
+                        .button.tiny#delete(onclick="remove('" + el.i + "');") delete
+                    .hidden(id="dbset2" + el.i)
+                        .button.tiny#save(onclick="save('"+ el.i + "');") save
+                        .button.tiny#cancel(onclick="cancel('" + el.i + "');") cancel
+                textarea(id='ta' + el.i).db-content-item-text= el.text
+                .db-content-item-text(id='tx' + el.i)= el.text
+        .db-countent-size= o + ' - ' + l + ' / ' + s + ' documents'

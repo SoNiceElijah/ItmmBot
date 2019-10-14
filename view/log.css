@@ -1,0 +1,299 @@
+body {
+    margin: 0;
+    background: #242729;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.center {
+    width: 540px;
+    padding: 20px 0 100px 0;
+}
+
+h1 {
+    font-size: 25px;
+    color : #f3f3f3;
+}
+
+p{
+    color : #b6b6b6;
+    margin-bottom: 50px;
+}
+
+#particle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -3;
+
+    opacity: 0.5;
+}
+
+a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.max {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 100%;
+}
+
+.button {
+
+    text-align: center;
+    margin: auto;
+    width: 300px;
+    line-height: 40px;
+    height: 40px;
+    border-radius: 3px;
+    border: 1px solid #ccdddd;
+    color: #ccdddd;
+    user-select: none;
+
+
+    cursor: pointer;
+
+    display: inline-block;
+}
+
+.header .button {
+    width: 150px;
+    margin-right: 10px;
+}
+
+.button-active {
+    border: 1px solid #a4afaf;
+    background: #a4afaf;
+    color: #111111;
+
+    display: inline-block;
+
+    text-align: center;
+    margin: auto;
+    width: 150px;
+    line-height: 40px;
+    height: 40px;
+    border-radius: 3px;
+    user-select: none;
+
+    margin-right: 10px;
+}
+
+.header {
+    padding-top: 40px;
+    margin: auto; 
+
+    width: 800px;
+}
+
+.button:hover {
+    border: 1px solid #a4afaf;
+    color: #a4afaf;
+}
+
+
+.button:active {
+
+    transition: 0s;
+
+    border: 1px solid #a4afaf;
+    background: #a4afaf;
+    color: #111111;
+}
+
+.main {
+    padding: 50px 20px 0 20px;
+    color: #f3f3f3;
+    margin: auto;
+    width: 800px;
+}
+
+.pipes-list {
+    padding: 20px 0 200px 0;
+}
+
+.pipe-title {
+    line-height: 40px;
+    height: 40px;
+
+    text-overflow: ellipsis;
+
+    overflow: hidden;
+}
+
+.pipe-name {
+    display: inline-block;
+
+    color: #d3d3d3;
+    font-size: 16px;
+    font-weight: 300;
+
+    padding-right: 10px;
+
+ 
+}
+
+.pipe-date-title  {
+    display: inline-block;
+    font-size: 16px;
+    padding-right: 10px;
+}
+
+.pipe-inside-list {
+    overflow: hidden;
+}
+
+.pipe-box {
+    overflow: hidden;
+    padding-bottom: 10px;
+    height: 60px;
+}
+
+.pipe-marker {
+    float: left;
+    border: 4px solid #82b6ca;
+    width: 12px;
+    height: 12px;
+    border-radius: 10px;
+}
+
+.pipe-marker-line {
+    float: left;
+    margin-top: 20px;
+    margin-left: -11px;
+    border-width: 0 1px 0 1px;
+    border-color: #82b6ca;
+    border-style: solid;
+
+    height: 50px;
+}
+
+.pipe-content-box {
+    margin-left: 30px;
+}
+
+.last .pipe-marker-line {
+    display: none;
+}
+
+.pipe-msg {
+    font-weight: 300;
+    height: 21px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.pipe-date {
+    color: #a1a1a1;
+}
+
+ul {
+    padding-left: 0px;
+    list-style-type: none;
+}
+
+li {
+    border-top: 1px solid #3f3f3f;
+}
+
+.footer {
+    width: 100%;
+    text-align: center;
+    color: #b6b6b6;
+    line-height: 50px;
+    height: 80px;
+
+    font-weight: 300;
+    user-select: none;
+
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.footer:hover {
+    color: #3bcfd4;
+}
+
+.footer p {
+    color: #a1a1a1;
+    height: 14px;
+    line-height: 14px;
+    font-size: 14px;
+
+    margin-bottom: 0;
+    margin-top: -14px;
+}
+
+.main p {
+    margin-top: 0;
+}
+
+.main h1 {
+    margin-bottom: 0;
+}
+
+.filter input {
+    padding: 8px 10px 8px 10px;
+    border: 1px solid #ccdddd;
+    background: transparent;
+    color: #d3d3d3;
+    border-radius: 3px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+    font-size: 16px;
+    margin-right: 10px;
+
+    outline: none;
+}
+
+.filter  input#msg  {
+    width: 410px ;
+    margin-right: 0;
+}
+
+.filter .button {
+    margin: 0;
+    margin-top: 10px;
+    width: 100px;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px;
+    height: 300px;
+}
+
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+img {
+    animation:spin 2s linear infinite;
+}
+
+#more {
+    margin: 0;
+    margin-top: 10px;
+    width: 150px;
+}
+
+#loading {
+    display: none;
+}
+
+#loadPlace {
+    display: none;
+}
+
+#go, #clear {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.main {
+    min-height: 800px;
+}

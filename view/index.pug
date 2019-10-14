@@ -1,0 +1,26 @@
+html
+    head
+        link(rel="shortcut icon", href="favicon.png")
+        title BotMonitor
+        style
+            include index.css
+    body
+        .max
+            #particle
+            .center
+                h1 Hi!
+                p
+                    | Добро пожаловать в приложение-монитор работы 
+                    a(href="https://vk.com/club186457555" , target="_blank") бота 
+                    | расписание ИИТМММ. Здесь ты можешь проверить
+                    | базу данных, настроить некоторые функции на лету, ну и просто 
+                    | бла бла бла (придумайте текст)
+
+                .buttons-panel
+                    a.button(href="/log") логи
+                    a.button(href="/mirror") зеркало
+                    a.button(href="/behavior") управление
+    script
+        include particles.min.js
+    script
+        include index.js

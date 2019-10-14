@@ -15,8 +15,9 @@ let weeks = ["DOWN", "UP"]
 let settings = require('./set');
 
 async function dataUpdate() {
+    await time.insertOne({x : 1});
     await time.drop();
-    for(let i = 0; i < 4; ++i) {
+    for(let i = 0; i < settings.docTable.length; ++i) {
         let data = require(`./outtmp/ttOut${i}.json`);
         let j = 0;
         for( ; j < data.length; ++j) {
@@ -26,7 +27,7 @@ async function dataUpdate() {
 
             await time.insertOne(data[j]);
         }
-        console.log(`Done ${j} items`);
+        console.log(`Done ${j} items`, true);
     }
 
     //Group hash recount
@@ -43,18 +44,21 @@ async function dataUpdate() {
                 .digest('hex');
             
             if(!(await module.exports.checkHash(gs[i],  j + '', hash))) {
-                //await event.insertOne({
-                //    type : 'update',
-                //    content : {
-                //        group : gs[i],
-               //         sub : j + ''
-               //     }
-                //});
-                console.log("g: " + gs[i] + " sub: " + j + ' are updated!');
+                if(!settings.mute) {
+                    await event.insertOne({
+                        type : 'update',
+                        content : {
+                        group : gs[i],
+                            sub : j + ''
+                        }
+                    });
+                }
+                console.log("g: " + gs[i] + " sub: " + j + ' are updated!', true);
             }
         }
     }
 
+    settings.siteFreeze = false;
     settings.freeze = false;
 }
 
@@ -71,6 +75,51 @@ module.exports = {
             event = db.collection('eventTable');
         }
         catch (ex) {console.log(ex);}
+    },
+    collections : async (name, offset, limit, query) => {
+        if(!name)
+            return await db.listCollections().toArray();
+        else {
+            let q = {}
+            if(query)
+                try {
+                    q = JSON.parse(query);
+                } catch (ex) {q = {}; console.log(ex.message,true);}
+            return await db.collection(name).find(q).sort({_id : -1}).skip(offset).limit(limit).toArray();
+        }
+    },
+    count : async (name, query) => {
+        if(!name)
+            return;
+        let q = {}
+        if(query)
+            try {
+            q = JSON.parse(query);
+            } catch (ex) {console.log(ex.message,true);}
+        return await db.collection(name).count(q);
+    },
+    collectionUpdate : async (name, id, query) => {
+        let q;
+        try {
+            q = JSON.parse(query);
+            delete q._id;
+        } catch (ex) {console.log(ex.message,true); return;}
+
+        await db.collection(name).updateOne({
+            _id : mongoClient.ObjectId(id)
+        }, {
+            $set : q
+        })
+    },
+    collectionDelete : async (name, id) => {
+        await db.collection(name).deleteOne({ _id : mongoClient.ObjectId(id)  });
+    },
+    collectionInsert : async (name, query) => {
+        let q;
+        try {
+            q = JSON.parse(query);
+        } catch (ex) {console.log(ex.message,true); return;}
+        await db.collection(name).insertOne(q);
     },
     update : dataUpdate,   
     getAll : async (g, s) => {
@@ -167,23 +216,66 @@ module.exports = {
     delete: async (id) => {
         user.deleteOne({ userId : id});
     },
-    log : async (id, text, lvl) => {
+    logBug : async (id, text, lvl) => {
         log.insertOne({
             userId : id,
             message : text,
             lvl : lvl
         });
     },
+    logNow : (msg) => {
+        log.insertOne({
+            msg : msg,
+            date : (new Date()).getUTCTime(),
+        });
+    },
+    logData : {},
+    log : async (msg) => {
+        if(!this.pipesCount)
+            this.pipesCount = 0;
+        if(!this.logData) {
+            this.pipesCount++;
+            this.logData = { num : this.pipesCount};
+        }
+        if(!this.logData.pipe)
+            this.logData.pipe = [];
+        let ddd = new Date();
+        this.logData.pipe.push({
+            msg : msg,
+            date : (new Date()).getUTCTime()
+        });
+    },
+    getLog : async (offset, limit, from, to, msg) => {
+        if(!msg) {
+            return await log.find({
+                date : { $gte : from, $lte : to},
+            }).sort({_id : -1}).skip(offset).limit(limit).toArray();
+        }
+        else {
+            return await log.find({
+                $or : [
+                    { msg : { $regex : ".*" + msg + "*." } },
+                    { pipe : { $elemMatch : {msg : { $regex : ".*" + msg + "*." }}} }
+                ],
+                date : { $gte : from, $lte : to},
+            }).sort({_id : -1}).skip(offset).limit(limit).toArray();
+        }
+    },
+    logDown : async () => {
+        this.logData.date = (new Date()).getUTCTime();
+        log.insertOne(this.logData);
+        this.logData = null;
+    },
     checkLink : async (id, href) => {
         let data = (await link.findOne({num:id}));
         if(!data) {
-            link.insertOne({num : id, href : href});
+            link.insertOne({num : id, href : href, date : (new Date()).getUTCTime()});
             return false
         }
         if(data.href == href)
             return true;
         else {
-            link.updateOne({num : id}, {$set : {href : href}});
+            link.updateOne({num : id}, {$set : {href : href, date : (new Date()).getUTCTime()}});
             return false;
         }
     },
@@ -201,14 +293,24 @@ module.exports = {
         }
     },
     link : async (n) => {
-        return await link.findOne({num : n}); 
+        return await link.findOne({num : n});
+    },
+    linkAll : async () => {
+        return await link.find({}).toArray();
+    },
+    dropLink: async () => {
+        link.drop();
     },
     getEvent : async (type) => {
         let data = await event.find({type : type}).toArray();
         await event.deleteMany({type : type});
 
         return data;
+    },
+    getLastCheckDate : async () => {
+        return (await log.find({ msg : "Check update....." }).sort({_id : -1}).limit(1).toArray())[0].date;
     }
+
 }
 
 //RobG ty
