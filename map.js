@@ -1,5 +1,6 @@
 const mongoClient = require("mongodb");
 const crypto = require('crypto');
+const fs = require('fs');
 
 let db = {}
 let time = {}
@@ -18,7 +19,7 @@ async function dataUpdate() {
     await time.insertOne({x : 1});
     await time.drop();
     for(let i = 0; i < settings.docTable.length; ++i) {
-        let data = require(`./outtmp/ttOut${i}.json`);
+        let data = JSON.parse(fs.readFileSync(`./outtmp/ttOut${i}.json`, 'utf8'));
         let j = 0;
         for( ; j < data.length; ++j) {
 
