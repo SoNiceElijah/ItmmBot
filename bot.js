@@ -113,8 +113,8 @@ const sc =
 
 const bot = new vkBot({
     //PROD!!!!!!!!!!!
-   token : "0a3061a44aa454b81311af0952f07991f632f1e2ba806faf752add8a3e12651ebe64dc6d94c4ca4956986",
-   group_id : 171210583
+    token : "6a0ac777d5312fd4242c4b3c0fd6b2428e9368b16d2ede70d7a78be92dcd37ddce53eab0bc551a5f1b7d8",
+    group_id : 186457555
 });
 
 
