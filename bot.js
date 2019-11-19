@@ -70,6 +70,7 @@ const mainKeys =  [
     ])
 ];
 
+
 const sc = 
     new Scene('meet',
     (ctx) => {
@@ -119,6 +120,8 @@ const bot = new vkBot({
 
 bot.use((new Session).middleware());
 bot.use((new Stage(sc)).middleware());
+
+bot.use(require('./events/hod'));
 
 
 bot.use(async (ctx,next) => {
@@ -490,7 +493,7 @@ let interval = setInterval(async () => {
     for(let i = 0; i < e.length; ++i) {
         u = (await $.userByGroup(e[i].content.group, e[i].content.sub)).map(el => el.userId);
         if(u && u.length != 0)
-            bot.sendMessage(u,'Рассписание обновилось!');
+            bot.sendMessage(u,'Расписание обновилось!');
     }
 
    
@@ -511,10 +514,3 @@ function deleteBotName(text) {
 
 
 
-` _______
-   |    |
-   |   \O/
-   |    |
-   |   / \
-___|___
- |   |    `
