@@ -88,15 +88,15 @@ let createMask = (ctx) => {
     
     let wordString = "";
 
-    for(let i = 0; i < dictionary.length; ++i)
+    for(let i = 0; i < dictionary['u' + ctx.message.peer_id].length; ++i)
     {
         wordString += " _"; 
         for(let j = 0; j < alphabet['u' + ctx.message.peer_id].length; ++j)
         {            
-            if(dictionary[i] == alphabet['u' + ctx.message.peer_id][j])
+            if(dictionary['u' + ctx.message.peer_id][i] == alphabet['u' + ctx.message.peer_id][j])
             {
                 wordString = wordString.substr(0, wordString.length - 2);
-                wordString += " " + dictionary[i];
+                wordString += " " + dictionary['u' + ctx.message.peer_id][i];
                 break;
             }                
         }
@@ -254,7 +254,7 @@ module.exports = async (ctx, next) => {
             }
 
             inGame["u" + ctx.message.peer_id] = true;
-            ctx.reply("О! Ты тоже любишь настолки? У меня есть одна игра для тебя. Загадаю слово, а ты должен его отгадать. Можешь присылать буквы слова или все слово целиком!\n\n Слово: " + wordString);
+            ctx.reply("О! Ты тоже любишь настолки? У меня есть одна игра для тебя. Загадаю слово, а ты должен его отгадать. Можешь присылать буквы слова или все слово целиком! Если надоест - напиши выход.\n\n Слово: " + wordString);
         }
         else
         {
