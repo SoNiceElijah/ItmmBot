@@ -508,3 +508,13 @@ function deleteBotName(text) {
     else
         return text;
 }
+
+
+
+` _______
+   |    |
+   |   \O/
+   |    |
+   |   / \
+___|___
+ |   |    `
