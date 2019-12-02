@@ -239,7 +239,7 @@ module.exports = async (ctx, next) => {
 
     }
     else {
-        if(ctx.message.text.toUpperCase() == "ход".toUpperCase() )
+        if(ctx.message.text.toUpperCase() == "игра".toUpperCase() )
         {
            
             
@@ -254,7 +254,7 @@ module.exports = async (ctx, next) => {
             }
 
             inGame["u" + ctx.message.peer_id] = true;
-            ctx.reply("О! Ты тоже любишь настолки? У меня есть одна игра для тебя. Загадаю слово, а ты должен его отгадать. Можешь присылать буквы слова или все слово целиком! Если надоест - напиши выход.\n\n Слово: " + wordString);
+            ctx.reply("Я загадаю слово, а ты должен его отгадать. Можешь присылать буквы слова или все слово целиком! Если надоест - напиши выход.\n\n Слово: " + wordString);
         }
         else
         {
