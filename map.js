@@ -9,6 +9,7 @@ let log = {}
 let link = {}
 let group = {}
 let event = {}
+let exams = {}
 
 let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 let weeks = ["DOWN", "UP"]
@@ -74,6 +75,7 @@ module.exports = {
             link = db.collection('linkTable');
             group = db.collection('groupTable');
             event = db.collection('eventTable');
+            exams = db.collection('examsTable');
         }
         catch (ex) {console.log(ex);}
     },
@@ -310,8 +312,17 @@ module.exports = {
     },
     getLastCheckDate : async () => {
         return (await log.find({ msg : "Check update....." }).sort({_id : -1}).limit(1).toArray())[0].date;
+    },
+    renewExams : async (data) => {
+        try {
+            await exams.drop();
+        }
+        catch (ex) {};
+        await exams.insertMany(data);
+    },
+    allExams : async () => {
+        return await exams.find({}).toArray();
     }
-
 }
 
 //RobG ty

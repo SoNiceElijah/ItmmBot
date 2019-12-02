@@ -37,6 +37,26 @@ app.get('/mirror', async (req,res) => {
     res.render('mirror', { h : list});
 });
 
+app.get('/exams', async (req,res) => {
+
+    let data = await $.allExams();
+    let boxes = [];
+
+    while(data.length > 0)
+    {
+        let res = data.filter(el => el.groups == data[0].groups);
+
+        boxes.push({
+            title : res[0].groups,
+            cards : res
+        });
+
+        data = data.filter(el => el.groups != data[0].groups);
+    }
+
+    res.render('exams', {b : boxes});
+});
+
 app.get('/behavior', async (req,res) => {
     let date = await $.getLastCheckDate();
     let links = await $.linkAll();
@@ -177,6 +197,16 @@ app.post('/forceUpdate', async (req,res) => {
             clearInterval(i);
         }
     },40)
+});
+
+app.post('/pushExams', async (req,res) => {
+
+    let arr = JSON.parse(req.body.js);
+    if( arr== null || arr == 'undefined' || arr.length <= 0)
+        return res.send(400);
+
+    await $.renewExams(JSON.parse(req.body.js));
+    res.send(200);
 });
 
 app.listen(5000,() => {

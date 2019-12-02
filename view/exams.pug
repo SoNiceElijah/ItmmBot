@@ -1,0 +1,89 @@
+html
+    head
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js")
+        link(rel="shortcut icon", href="favicon.png")
+        title BotLogMonitor
+        style
+            include exams.css
+    body
+        .header
+            a.button(href="/") главная
+            a.button(href="/log") логи
+            a.button(href="/mirror") зеркало
+            a.button(href="/behavior") управление 
+            .button-active информация 
+        .main 
+            h1 EXAMS PAGE
+            p
+                | Настройки связанные с сессией ( сессия :( )
+
+            .rule-list
+                .rule-box-list#boxList
+                    each box, i in b
+                        .rule-box(id='box' + i)
+                            .rule-header
+                                input(type="text", placeholder="Enter groups", value=box.title)
+                                .delete-button(id="deleteButton" + i, onclick="removeBox(" + i +")") X
+                            .rule-title 
+                                span(title="зачет с оценкой") оцн
+                                span(title="зачет") зач
+                                span(title="экзамен") экз                       
+                                
+                            .rule-body
+                                .rule-list(id="ruleList" + i)
+                                    each card, j in box.cards
+                                        .rule-item(id = "card" + i + "_" + j)
+                                            .rule-text(id="ruleText" + i + "_" + j)= card.text
+                                            .rule-checkboxes 
+                                                .delete-button.white-color(id="deleteCard" + i + '_' + j, onclick="removeCard('"+ i + "_" + j +"')") X
+                                                label.container
+                                                    input(id = "mark" + i + "_" + j,type="checkbox", name="mark_check", checked= card.mark)
+                                                    span.checkmark
+                                                label.container
+                                                    input(id = "zachet" + i + "_" + j,type="checkbox", name="zachet_check", checked= card.zachet)
+                                                    span.checkmark
+                                                label.container
+                                                    input(id = "exam" + i + "_" + j,type="checkbox", name="exam_check", checked= card.exam) 
+                                                    span.checkmark                       
+                                .rule-adder(id = "ruleAdder" + i)
+                                    input(id="adderText" + i, type="text")
+                                .button.rule-item-button(id="moreRules" + i, onclick="upAdder("+ i +")") more
+
+                .button.rule-button#newBox new
+                .button.rule-button#saveAll save
+
+                .template        
+                    .rule-item#card
+                        .rule-text#ruleText
+                        .rule-checkboxes 
+                            .delete-button.white-color#deleteCard X
+                            label.container
+                                input#mark(type="checkbox", name="mark_check")
+                                span.checkmark
+                            label.container
+                                input#zachet(type="checkbox", name="zachet_check")
+                                span.checkmark
+                            label.container
+                                input#exam(type="checkbox", name="exam_check") 
+                                span.checkmark
+                    .rule-box#box
+                        .rule-header
+                            input(type="text", placeholder="Enter groups")
+                            .delete-button#deleteBox X
+                        .rule-title 
+                            span(title="зачет с оценкой") оцн
+                            span(title="зачет") зач
+                            span(title="экзамен") экз                       
+                            
+                        .rule-body
+                            .rule-list#ruleList                               
+                            .rule-adder#ruleAdder
+                                input#adderText(type="text")
+                            .button.rule-item-button#moreRules more
+
+        .footer SoNiceElijah 
+            p 2019
+
+          
+    script
+        include exams.js
