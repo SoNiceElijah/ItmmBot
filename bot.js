@@ -117,12 +117,12 @@ local_group_id = 0;
 PROD = false;
 if(PROD)
 {
-    local_token = "0a3061a44aa454b81311af0952f07991f632f1e2ba806faf752add8a3e12651ebe64dc6d94c4ca4956986";
+    local_token = "e462ad2b599c81c4587e9d821d1068af82eca0e927850da5247dfa86dc7f1d761058f1287f5b7b3ab7cfe";
     local_group_id = 186457555;
 }
 else
 {
-    local_token = "e462ad2b599c81c4587e9d821d1068af82eca0e927850da5247dfa86dc7f1d761058f1287f5b7b3ab7cfe";
+    local_token = "0a3061a44aa454b81311af0952f07991f632f1e2ba806faf752add8a3e12651ebe64dc6d94c4ca4956986";
     local_group_id = 171210583;
 }
 

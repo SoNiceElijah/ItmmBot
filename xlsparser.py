@@ -171,7 +171,7 @@ def block(i,j):
 with open(sys.argv[2] + ".log", "w",  encoding='utf8') as log:
     try:
 
-        wb = xlrd.open_workbook(sys.argv[1])
+        wb = xlrd.open_workbook(sys.argv[1], formatting_info=True)
         sheet = wb.sheet_by_index(0)
 
         log.write( str(sheet.ncols) + " " + str(sheet.nrows) + "\n")

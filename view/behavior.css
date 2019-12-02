@@ -41,7 +41,7 @@ p{
 }
 
 .header .button {
-    width: 150px;
+    width: 120px;
     margin-right: 10px;
 }
 
@@ -54,11 +54,13 @@ p{
 
     text-align: center;
     margin: auto;
-    width: 150px;
+    width: 120px;
     line-height: 40px;
     height: 40px;
     border-radius: 3px;
     user-select: none;
+    
+    margin-right: 10px;
 }
 
 .header {
