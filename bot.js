@@ -117,7 +117,7 @@ local_group_id = 0;
 PROD = true;
 if(PROD)
 {
-    local_token = "e462ad2b599c81c4587e9d821d1068af82eca0e927850da5247dfa86dc7f1d761058f1287f5b7b3ab7cfe";
+    local_token = "6a0ac777d5312fd4242c4b3c0fd6b2428e9368b16d2ede70d7a78be92dcd37ddce53eab0bc551a5f1b7d8";
     local_group_id = 186457555;
 }
 else
