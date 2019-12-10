@@ -114,7 +114,7 @@ const sc =
 local_token = '';
 local_group_id = 0;
 
-PROD = fasle;
+PROD = false;
 if(PROD)
 {
     local_token = "6a0ac777d5312fd4242c4b3c0fd6b2428e9368b16d2ede70d7a78be92dcd37ddce53eab0bc551a5f1b7d8";
@@ -260,6 +260,9 @@ bot.command('Все', async (ctx) => {
 
 })
 
+let mark = "&#128313;";
+let dark = "&#128310;";
+
 
 bot.command('Понедельник', async (ctx) => {
     ctx.reply(await getBlockByDayNum(ctx,1));
@@ -291,6 +294,43 @@ bot.command('?', async (ctx) => {
 
 bot.command('get week', async (ctx) => {
     ctx.reply(weeks[(new Date()).getWeekNumber() % 2]);
+});
+
+bot.command('Сессия', async (ctx) => {
+    data = await $.getExams(ctx.group, ctx.sub);
+
+    ex1 = data.filter(e => e.exam);
+    ex2 = data.filter(e => e.zachet);
+    ex3 = data.filter(e => e.mark);
+
+    msg = `Зима 2019-2020\n\n`;
+
+    msg += 'ЭКЗАМЕНОВ: ' +ex1.length + '\n';
+    msg += 'ЗАЧЕТОВ: ' + ex2.length + '\n';
+
+    if(ex3.length > 0)
+        msg += 'ЗАЧЕТОВ С ОЦЕНКОЙ: ' + ex3.length + '\n';
+
+    
+
+    msg += "\nЗачеты:\n";
+
+    for(let i = 0; i < ex2.length; ++i)
+        msg += `${mark} ${ex2[i].text} \n`;
+
+    msg += "\nЭкзамены:\n";
+
+    for(let i = 0; i < ex1.length; ++i)
+        msg += `${mark} ${ex1[i].text} \n`;
+
+    if(ex3.length > 0)
+        msg += "\nЗачеты с оценкой:\n";
+
+    for(let i = 0; i < ex3.length; ++i)
+        msg += `${mark} ${ex3[i].text} \n`;
+
+
+    ctx.reply(msg);
 });
 
 bot.command('get link', async (ctx) => {
@@ -404,8 +444,7 @@ function genSettigsKeys(ctx) {
  */
 
 
-let mark = "&#128313;";
-let dark = "&#128310;";
+
 
 let helpString = `
     &#10067; СПИСОК КОМАНД

@@ -322,6 +322,15 @@ module.exports = {
     },
     allExams : async () => {
         return await exams.find({}).toArray();
+    },
+    getExams : async (g, s) => {
+        arr = await exams.find({ groups : {$regex : ".*" + g + ".*"}}).toArray();
+        arr = arr.filter(
+            e => (e.groups.length ==e.groups.indexOf(g) + g.length 
+            || e.groups[e.groups.indexOf(g) + g.length] != '(')
+            || e.groups.indexOf(g + '(' + s + ')') != -1 );
+
+        return arr;
     }
 }
 
