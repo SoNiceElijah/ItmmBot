@@ -16,6 +16,7 @@ app.use(bodyParser({ extended: false }));
 app.use(cookieParser());
 app.use(express.static('public'));
 app.use(express.static('outtmp'));
+app.use('/media', express.static('media'));
 
 app.use(async (req,res,next) => {
     if(req.cookies['token'] == "megabot3000")

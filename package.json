@@ -9,6 +9,7 @@
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
     "jsdom": "^15.1.1",
+    "jstransformer-markdown-it": "^2.1.0",
     "mongodb": "^3.3.2",
     "node-vk-bot-api": "^2.4.11",
     "pug": "^2.0.4",
