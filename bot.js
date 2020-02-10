@@ -114,7 +114,7 @@ const sc =
 local_token = '';
 local_group_id = 0;
 
-PROD = false;
+PROD = true;
 if(PROD)
 {
     local_token = "6a0ac777d5312fd4242c4b3c0fd6b2428e9368b16d2ede70d7a78be92dcd37ddce53eab0bc551a5f1b7d8";
