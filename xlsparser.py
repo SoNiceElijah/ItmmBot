@@ -2,10 +2,10 @@ import xlrd
 import json
 import sys 
 
-sys.argv.append("./data/data0.xls")
+sys.argv.append("./data/data3.xls")
 sys.argv.append("test")
-sys.argv.append(12)
-sys.argv.append(15)
+sys.argv.append(6)
+sys.argv.append(9)
 
 start_offset = int(sys.argv[4])
 
@@ -179,11 +179,11 @@ with open(sys.argv[2] + ".log", "w",  encoding='utf8') as log:
         group_offset = int(sys.argv[3])
         group_buff = ""
         for i in range(2, sheet.ncols):
-            sr = sheet.cell(group_offset,i).value
+            sr = str(sheet.cell(group_offset,i).value)
 
             nr = ''
             try: 
-                nr = sheet.cell(group_offset,i + 1).value
+                nr = str(sheet.cell(group_offset,i + 1).value)
             except Exception:
                 nr = ''
 

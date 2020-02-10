@@ -265,7 +265,7 @@ module.exports = {
         }
     },
     logDown : async () => {
-        this.logData.date = (new Date()).getUTCTime();
+        this.logData.date = (new Date()).getTime();
         log.insertOne(this.logData);
         this.logData = null;
     },

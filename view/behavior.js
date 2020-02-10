@@ -6,8 +6,10 @@ let time = setInterval(() => {
 
     let d = new Date();
     let utc = d.getTime() + d.getTimezoneOffset() * 60000;
+    //console.log(d.getTimezoneOffset());
 
     let time = (utc - lastUTC);
+    console.log(time);
 
     if(time >= maxTime) {
         lastUTC = utc;
@@ -16,7 +18,7 @@ let time = setInterval(() => {
 
     let size = Math.floor(800 * ((utc - lastUTC) / maxTime));
     $('#procLine').css('width', size + 'px');
-    console.log(size);
+    //console.log(size);
 
     $('#procTime').html(timeToString(time) + " / " + timeToString(maxTime));
 }, 200);
