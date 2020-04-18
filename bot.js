@@ -111,20 +111,19 @@ const sc =
         ctx.reply('Отлично! Теперь ты сможешь получать расписание!',null, Math.floor(ctx.message.peer_id / 1000) != 2000000 ? mainKeys[0] : null);
     });
 
-local_token = '';
-local_group_id = 0;
 
-PROD = true;
-if(PROD)
+
+const LOAD_STAT = await $.stat();
+
+if(!LOAD_STAT || !LOAD_STAT.token )
 {
-    local_token = "6a0ac777d5312fd4242c4b3c0fd6b2428e9368b16d2ede70d7a78be92dcd37ddce53eab0bc551a5f1b7d8";
-    local_group_id = 186457555;
+    console.log('No token');
+    return;
 }
-else
-{
-    local_token = "0a3061a44aa454b81311af0952f07991f632f1e2ba806faf752add8a3e12651ebe64dc6d94c4ca4956986";
-    local_group_id = 171210583;
-}
+
+let local_token = LOAD_STAT.token;
+let local_group_id = LOAD_STAT.gid;
+
 
 const bot = new vkBot({
     //PROD!!!!!!!!!!!

@@ -20,8 +20,8 @@ module.exports.docTable = [
         o : 17,
     },
     {
-        g : 14,
-        o : 17,
+        g : 16,
+        o : 19,
     },
 ];
 

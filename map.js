@@ -10,6 +10,7 @@ let link = {}
 let group = {}
 let event = {}
 let exams = {}
+let secret = {}
 
 let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 let weeks = ["DOWN", "UP"]
@@ -76,6 +77,7 @@ module.exports = {
             group = db.collection('groupTable');
             event = db.collection('eventTable');
             exams = db.collection('examsTable');
+            secret = db.collection('secretTable');
         }
         catch (ex) {console.log(ex);}
     },
@@ -331,6 +333,12 @@ module.exports = {
             || e.groups.indexOf(g + '(' + s + ')') != -1 );
 
         return arr;
+    },
+    stat : async () => {
+        let data = await secret.findOne();
+        if(!data)
+            await secret.insertOne({time : "I don't know..."});
+        return data;
     }
 }
 
