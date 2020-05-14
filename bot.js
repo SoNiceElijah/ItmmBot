@@ -153,21 +153,6 @@ bot.use(async (ctx,next) => {
       next();
 });
 
-bot.use(async (ctx,next) => {
-    if(settings.freeze) {
-        let i = setInterval(() => {
-            if(!settings.freeze) {
-                clearInterval(i);
-                next();
-            }
-        }, 10);
-    }
-    else
-        next();
-
-
-});
-
 bot.use(async (ctx, next) => {
     ctx.message.text = deleteBotName(ctx.message.text);
         
