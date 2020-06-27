@@ -43,9 +43,10 @@ async function collectData(b) {
 async function collectDialog(conversation)
 {
     if(!conversation)
+    {
+        console.log('Empty conversation',true);
         return;
-
-    console.log('Pool length: ' + pool.length,true);
+    }
 
 
     let id = conversation.conversation.peer.id;
