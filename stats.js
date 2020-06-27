@@ -25,7 +25,7 @@ async function collectData(b) {
             count : size
         });
 
-        for(let i = 0; i < Math.min(size,dialogs.count); ++i)
+        for(let i = 0; i < Math.min(size,dialogs.items.length); ++i)
             await collectDialog(dialogs.items[i]);
         
         count = dialogs.count;
