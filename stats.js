@@ -30,6 +30,8 @@ async function collectData(b) {
         
         count = dialogs.count;
         ++page;
+
+        console.log('Stat page ' + page,true);
     }
 
     console.log('Super data loaded',true);
