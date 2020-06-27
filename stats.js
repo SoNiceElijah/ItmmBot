@@ -14,7 +14,7 @@ function init(b)
 
 async function collectData(b) {
 
-    
+    console.log('Start stat collection',true);
 
     let count = 1;
     let page = 0;
