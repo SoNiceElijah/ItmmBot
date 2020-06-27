@@ -9,6 +9,8 @@ var cookieParser  = require('cookie-parser')
 let $ = require('./map');
 let settings = require('./set');
 
+const archiver = require('archiver');
+
 app.set('views','./view');
 app.set('view engine','pug');
 
@@ -104,14 +106,40 @@ app.post('/mirrorData', async (req,res) => {
         limit = parseInt(req.query['s']);
 
     let list = await $.collections(req.body['c'], offset, limit, req.body['q']);
-    let size = await $.count(req.body['c'], req.body['q']) ;
+    let size = await $.count(req.body['c'], req.body['q']);
 
     list = list.map(el => { 
         let obj = Object.assign({}, el);
         delete obj._id;
         return {i : el._id, text : JSON.stringify(obj, null, '\t')};
     });
+
     res.render('partial/mirrorList', { d : list, s : size, o : offset, l : Math.min(offset + limit, size)});
+});
+
+app.post('/dump', async (req,res) => {
+
+    let names = (await $.collections()).map(e => e.name);
+    
+    for(let i = 0; i < names.length; ++i)
+    {
+        let data = await $.collections(names[i],0, await $.count(names[i]),'{}');
+        let str = JSON.stringify(data);
+
+        fs.writeFileSync(__dirname + '/cash/'+names[i] + '.json',str);
+    }
+
+    const fileName = '/exports/dump'+ Date.now() + '.zip';
+    const zip = fs.createWriteStream(__dirname + '/public' + fileName);
+    let archive = archiver('zip');
+
+    zip.on('close', () => {res.send(fileName)});
+    zip.on('error', () => {res.send(500);});
+
+    archive.pipe(zip);
+    archive.directory(__dirname + '/cash/',false);
+    archive.finalize();    
+
 });
 
 app.post('/mirrorUpdate', async (req,res) => {

@@ -68,6 +68,20 @@ $('#go').click(e => {
     render();
 });
 
+$('#dump').click(e => {
+    $.post('/dump',{},(msg) => {
+        
+        let a = document.createElement('a');
+        a.setAttribute('href',msg);
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        
+        a.click();
+
+        document.removeChild(a);
+    });
+});
+
 $('#prev1').click(e => {
 
     if(offset - limit < 0)

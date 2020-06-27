@@ -8,7 +8,6 @@ const Session = require('node-vk-bot-api/lib/session')
 Date.prototype.getUTCTime = function () {
 
     let deb = this.getTimezoneOffset();
-
     return this.getTime() + (this.getTimezoneOffset() * 60000);
 };
 

@@ -101,7 +101,7 @@ module.exports = {
             try {
             q = JSON.parse(query);
             } catch (ex) {console.log(ex.message,true);}
-        return await db.collection(name).count(q);
+        return await db.collection(name).countDocuments (q);
     },
     collectionUpdate : async (name, id, query) => {
         let q;
