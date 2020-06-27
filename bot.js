@@ -5,6 +5,8 @@ const Scene = require('node-vk-bot-api/lib/scene')
 const Stage = require('node-vk-bot-api/lib/stage')
 const Session = require('node-vk-bot-api/lib/session')
 
+const stats = require('./stats');
+
 Date.prototype.getUTCTime = function () {
 
     let deb = this.getTimezoneOffset();
@@ -486,8 +488,12 @@ bot.use((ctx,next) => {
     ctx.reply(wrongQuestionStrings[0]);
 });
 
-bot.startPolling(() => {
+bot.startPolling(async () => {
     console.log("I'm online", true);
+    
+    await stats.init(bot);
+    await stats.collectData();
+    await stats.anylizeData();
 })
 
 let days = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];

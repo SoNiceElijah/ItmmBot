@@ -1,6 +1,8 @@
 var express = require('express');
 var app = express();
 
+const stats = require('./stats');
+
 const fs = require('fs');
 
 var bodyParser = require('body-parser').urlencoded;
@@ -20,6 +22,8 @@ app.use(express.static('public'));
 app.use(express.static('outtmp'));
 app.use('/media', express.static('media'));
 
+
+let lukases = 0;
 app.use(async (req,res,next) => {
     if(req.cookies['token'] == "megabot3000")
         next();
@@ -38,6 +42,10 @@ app.get('/log', async (req,res) => {
 app.get('/mirror', async (req,res) => {
     let list = await $.collections();
     res.render('mirror', { h : list});
+});
+
+app.get('/stats', async (req,res) => {
+    res.render('statistic', { val : JSON.stringify(stats.getData())});
 });
 
 app.get('/exams', async (req,res) => {
@@ -238,7 +246,7 @@ app.post('/pushExams', async (req,res) => {
     res.send(200);
 });
 
-app.listen(5000,() => {
+app.listen(5000, () => {
     console.log('Monitor is online', true);
 });
 

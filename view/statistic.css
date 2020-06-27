@@ -1,0 +1,83 @@
+body {
+    margin: 0;
+    background: #ebebeb;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.center {
+    margin: auto;
+
+    width: 1000px;
+
+    padding-top: 50px;
+    padding-bottom: 100px;
+}
+
+.graphs {
+    display: flex;
+}
+
+.pie-chart {
+    width: 500px;
+    height: 500px;
+
+    color: #659fe6;
+
+    flex: 1;
+}
+
+
+
+.line-chart {
+    width: 500px;
+    height: 500px;
+
+    color: #659fe6;
+
+    flex: 1;
+}
+
+ol {
+    padding-left: 15px;
+}
+
+.button {
+    background: #ffffff;
+    border-radius: 5px;
+
+    user-select: none;
+    cursor: pointer;
+
+    width: 200px;
+    text-align: center;
+    height: 50px;
+
+    line-height: 50px;
+
+    display: inline-block;
+    transition: 0.1s;
+}
+
+.button:hover {
+    background: #e06c6c;
+    color: #ffffff;
+}
+
+.button:active {
+    transition: 0.0s;
+    background: #d63030;
+    color: #ffffff;
+}
+
+.ne-lukas {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.sovsem-ne-lukas:hover {
+
+    background: #ffffff;
+    color: black;
+    transition: 0.0s;
+    opacity: 0.0;
+}
