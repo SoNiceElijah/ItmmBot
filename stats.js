@@ -42,6 +42,10 @@ async function collectData(b) {
 
 async function collectDialog(conversation)
 {
+    console.log('Try read dialog',true);
+    console.log(conversation,true);
+
+
     let id = conversation.conversation.peer.id;
     let page = 0;  
     let count = 1;
