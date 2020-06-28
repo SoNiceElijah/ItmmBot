@@ -84,7 +84,8 @@ function createData()
         else
             data[word] = 1;
 
-        let d = new Date(pool[i].date);
+            
+        let d = new Date(pool[i].date * 1000);
         timeStat[d.getDay()] += 1;
     }
 
